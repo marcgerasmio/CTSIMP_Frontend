@@ -1,17 +1,59 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Register = ({ onToggle, openModal }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const navigate = useNavigate("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
-    setTimeout(() => {
+    if (password !== confirmPassword) {
+      alert("Passwords do not match!");
       setIsLoading(false);
-      openModal(); // Simulate login error modal
-    }, 2000);
+      return;
+    }
+
+    // Prepare the registration data
+    const registrationData = {
+      name: fullName,
+      email: email,
+      password: password,
+    };
+
+    try {
+      // Send the registration request using fetch
+      const response = await fetch("http://tourism.test/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(registrationData),
+      });
+
+      if (response.ok) {
+        // Handle successful registration
+        const result = await response.json();
+        console.log("Registration successful:", result);
+       alert("Registration Successfull");
+       onToggle();
+      } else {
+        // Handle errors during registration
+        const error = await response.json();
+        alert("Registration failed: " + error.message);
+      }
+    } catch (error) {
+      console.error("Error registering:", error);
+      alert("An error occurred during registration.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -35,6 +77,8 @@ const Register = ({ onToggle, openModal }) => {
               className="grow"
               placeholder="Full Name"
               required
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
             />
           </label>
         </div>
@@ -51,10 +95,12 @@ const Register = ({ onToggle, openModal }) => {
               <path d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" />
             </svg>
             <input
-              type="text"
+              type="email"
               className="grow"
               placeholder="example@gmail.com"
               required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </label>
         </div>
@@ -78,6 +124,8 @@ const Register = ({ onToggle, openModal }) => {
               placeholder="Enter a password"
               className="grow"
               required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </label>
         </div>
@@ -98,9 +146,11 @@ const Register = ({ onToggle, openModal }) => {
             </svg>
             <input
               type={showPassword ? "text" : "password"}
-              placeholder="Confim Password"
+              placeholder="Confirm Password"
               className="grow"
               required
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
             />
           </label>
         </div>
@@ -123,25 +173,13 @@ const Register = ({ onToggle, openModal }) => {
             disabled={isLoading}
           >
             {isLoading ? (
-              <>
-                <span className="loading loading-spinner text-white"></span>
-                <span className="ml-2 text-white">Loading...</span>
-              </>
+              <span>Loading...</span>
             ) : (
-              "Register"
+              <span>Create Account</span>
             )}
           </button>
         </div>
       </form>
-      <div className="divider before:bg-white after:bg-white text-white">
-        or
-      </div>
-      <button
-        className="w-full py-3 font-bold text-white btn btn-error bg-red-500 rounded-lg"
-        onClick={onToggle}
-      >
-        Already have an Account
-      </button>
     </div>
   );
 };

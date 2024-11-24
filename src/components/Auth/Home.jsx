@@ -29,7 +29,7 @@ const Home = () => {
               landscapes, and vibrant local traditions, all in one convenient
               platform.
             </p>
-            <NavLink to="/">
+            <NavLink to="/carousel">
               <button className="btn btn-warning bg-yellow-500 font-bold text-white w-1/4">
                 Explore
               </button>

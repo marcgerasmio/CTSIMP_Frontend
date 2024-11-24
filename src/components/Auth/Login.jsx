@@ -3,15 +3,49 @@ import { useState } from "react";
 const Login = ({ onToggle, openModal }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
-    setTimeout(() => {
+    // Prepare the login data
+    const loginData = {
+      email,
+      password,
+    };
+
+    try {
+      // Send login request
+      const response = await fetch("https://tourism.test/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(loginData),
+      });
+
+      const data = await response.json();
+      console.log(data.user.name);
+      if (response.ok) {
+        sessionStorage.setItem("name", data.user.name)
+        
+        if (data.user.name === "Admin") {
+          window.location.href = "/admin"; 
+        } else {
+          window.location.href = "/dashboard"; 
+        }
+
+      } else {
+
+        alert(data.message || "Login failed. Please try again.");
+      }
+    } catch (error) {
+      alert("An error occurred while logging in. Please try again.");
+    } finally {
       setIsLoading(false);
-      openModal(); // Simulate login error modal
-    }, 2000);
+    }
   };
 
   return (
@@ -36,6 +70,8 @@ const Login = ({ onToggle, openModal }) => {
               className="grow"
               placeholder="example@gmail.com"
               required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </label>
         </div>
@@ -59,6 +95,8 @@ const Login = ({ onToggle, openModal }) => {
               placeholder="Enter a password"
               className="grow"
               required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </label>
         </div>

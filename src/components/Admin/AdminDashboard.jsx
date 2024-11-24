@@ -1,39 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaSignOutAlt, FaUserCog } from "react-icons/fa";
 
 const AdminDashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPlace, setSelectedPlace] = useState(null);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const [pendingPlaces, setPendingPlaces] = useState([]);
+  const [approvedPlaces, setApprovedPlaces] = useState([]);
 
-  const places = [
-    {
-      id: 1,
-      name: "Tinuy-an Falls",
-      description:
-        "A beautiful waterfall located in Surigao del Sur, Philippines.",
-      visualTour:
-        "<iframe src='https://www.example.com/visual-tour' width='100%' height='300'></iframe>",
-      googleMap:
-        "<iframe src='https://www.google.com/maps/embed?pb=!1m18...'></iframe>",
-      picture: "https://via.placeholder.com/600x400?text=Tinuy-an+Falls",
-    },
-    {
-      id: 2,
-      name: "Enchanted River",
-      description:
-        "A mystical river located in Hinatuan, Surigao del Sur, known for its blue color.",
-      visualTour:
-        "<iframe src='https://www.example.com/visual-tour' width='100%' height='300'></iframe>",
-      googleMap:
-        "<iframe src='https://www.google.com/maps/embed?pb=!1m18...'></iframe>",
-      picture: "https://via.placeholder.com/600x400?text=Enchanted+River",
-    },
-  ];
+  useEffect(() => {
+    // Fetch pending places
+    fetch("http://tourism.test/api/pending")
+      .then((response) => response.json())
+      .then((data) => setPendingPlaces(data))
+      .catch((error) => console.error("Error fetching pending places:", error));
+
+    // Fetch approved places
+    fetch("http://tourism.test/api/approvedplaces")
+      .then((response) => response.json())
+      .then((data) => setApprovedPlaces(data))
+      .catch((error) => console.error("Error fetching approved places:", error));
+  }, []);
 
   const handleReviewClick = (place) => {
     setSelectedPlace(place);
@@ -45,6 +32,27 @@ const AdminDashboard = () => {
     setSelectedPlace(null);
   };
 
+  const updatePlaceStatus = async (id, status) => {
+    try {
+      const response = await fetch(`http://tourism.test/api/places/${id}/status`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status }),
+      });
+
+      window.location.reload();
+
+      if (!response.ok) {
+        throw new Error("Failed to update status.");
+      }
+
+    } catch (error) {
+      console.error("Error updating status:", error);
+    }
+  };
+
   const PlaceDetailsModal = ({ place, isOpen, onClose }) => {
     if (!isOpen) return null;
 
@@ -52,7 +60,7 @@ const AdminDashboard = () => {
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white p-8 rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-semibold">{place.name}</h2>
+            <h2 className="text-2xl font-semibold">{place.place_name}</h2>
             <button
               onClick={onClose}
               className="btn btn-sm btn-circle btn-ghost"
@@ -69,7 +77,7 @@ const AdminDashboard = () => {
             <section>
               <h3 className="font-medium text-lg mb-2">Picture</h3>
               <img
-                src={place.picture}
+                src={`http://tourism.test/storage/${place.image_link}`}
                 alt={place.name}
                 className="w-full h-auto rounded-lg"
               />
@@ -77,20 +85,27 @@ const AdminDashboard = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <section>
-                <h3 className="font-medium text-lg mb-2">Visual Tour</h3>
-                <div
-                  dangerouslySetInnerHTML={{ __html: place.visualTour }}
-                  className="w-full aspect-video"
-                />
+                <h3 className="font-medium text-lg mb-2">Google Map</h3>
+                <iframe
+                  src={place.map_iframe}
+                  title="Location Map"
+                  className="w-full h-64"
+                ></iframe>
               </section>
 
               <section>
                 <h3 className="font-medium text-lg mb-2">
-                  Google Map Location
+                 Visual Tour
                 </h3>
-                <div
-                  dangerouslySetInnerHTML={{ __html: place.googleMap }}
-                  className="w-full aspect-video"
+                <iframe
+                  src={place.virtual_iframe}
+                  title="Virtual Tour"
+                  className="w-full h-64"
+                  allow="xr-spatial-tracking; vr; gyroscope; accelerometer; fullscreen; autoplay; xr"
+                  scrolling="no"
+                  allowFullScreen={true}
+                  frameBorder="0"
+                  allowVR="yes"
                 />
               </section>
             </div>
@@ -99,7 +114,6 @@ const AdminDashboard = () => {
             <button className="btn btn-outline" onClick={onClose}>
               Close
             </button>
-            <button className="btn btn-primary text-white">Approve</button>
           </div>
         </div>
       </div>
@@ -108,69 +122,121 @@ const AdminDashboard = () => {
 
   const PasswordChangeModal = () => {
     if (!isPasswordModalOpen) return null;
+    const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+  const name = sessionStorage.getItem("name");
+
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+
+   
+    setError(null);
+    setSuccess(null);
+
+   
+    if (newPassword !== confirmPassword) {
+      setError("New password and confirmation do not match.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const response = await fetch("http://tourism.test/api/change-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          new_password: newPassword,
+          new_password_confirmation: confirmPassword,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to change password.");
+      }
+
+      setSuccess("Password changed successfully.");
+      setIsPasswordModalOpen(false);
+    } catch (err) {
+      setError(err.message || "Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white p-8 rounded-lg w-full max-w-md">
-          <h2 className="text-2xl font-semibold mb-4">Change Password</h2>
-          <hr />
-          <form>
-            <div className="space-y-4 mt-5">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Current Password
-                </label>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  className="input input-bordered w-full"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  New Password
-                </label>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  className="input input-bordered w-full"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Confirm New Password
-                </label>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  className="input input-bordered w-full"
-                />
-              </div>
-
-              <div className="form-control mt-4">
-                <label className="label cursor-pointer">
-                  <span className="label-text">Show Password</span>
-                  <input
-                    type="checkbox"
-                    checked={showPassword}
-                    onChange={() => setShowPassword(!showPassword)}
-                    className="toggle toggle-primary"
-                  />
-                </label>
-              </div>
+      <div className="bg-white p-8 rounded-lg w-full max-w-md">
+        <h2 className="text-2xl font-semibold mb-4">Change Password</h2>
+        <hr />
+        <form onSubmit={handlePasswordChange}>
+          <div className="space-y-4 mt-5">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Current Password
+              </label>
+              <input
+                type="password"
+                className="input input-bordered w-full"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+              />
             </div>
-            <div className="mt-6 flex justify-end space-x-3">
-              <button
-                type="button"
-                onClick={() => setIsPasswordModalOpen(false)}
-                className="btn btn-outline"
-              >
-                Cancel
-              </button>
-              <button type="submit" className="btn btn-primary">
-                Change Password
-              </button>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                New Password
+              </label>
+              <input
+                type="password"
+                className="input input-bordered w-full"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+              />
             </div>
-          </form>
-        </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Confirm New Password
+              </label>
+              <input
+                type="password"
+                className="input input-bordered w-full"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="mt-6">
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+            {success && <p className="text-green-500 text-sm">{success}</p>}
+          </div>
+          <div className="mt-6 flex justify-end space-x-3">
+            <button
+              type="button"
+              onClick={() => setIsPasswordModalOpen(false)}
+              className="btn btn-outline"
+              disabled={loading}
+            >
+              Cancel
+            </button>
+            <button type="submit" className="btn btn-primary" disabled={loading}>
+              {loading ? "Changing..." : "Change Password"}
+            </button>
+          </div>
+        </form>
       </div>
+    </div>
     );
   };
 
@@ -230,13 +296,13 @@ const AdminDashboard = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {places.map((place, index) => (
+                      {pendingPlaces.map((place, index) => (
                         <tr key={place.id}>
-                          <td>{index + 1}</td>
-                          <td>John Doe</td>
+                         <td>{index + 1}</td>
                           <td>{place.name}</td>
-                          <td>example@gmail.com</td>
-                          <td>09518149753</td>
+                          <td>{place.place_name}</td>
+                          <td>{place.email_address}</td>
+                          <td>{place.contact_no}</td>
                           <td className="flex gap-3">
                             <button
                               className="btn btn-primary btn-sm"
@@ -244,8 +310,17 @@ const AdminDashboard = () => {
                             >
                               Review
                             </button>
-                            <button className="btn btn-outline btn-warning btn-sm">
-                              Pending
+                            <button
+                              className="btn btn-outline btn-success btn-sm"
+                              onClick={() => updatePlaceStatus(place.id, "Approved")}
+                            >
+                              Approve
+                            </button>
+                            <button
+                              className="btn btn-outline btn-error btn-sm"
+                              onClick={() => updatePlaceStatus(place.id, "Rejected")}
+                            >
+                              Reject
                             </button>
                           </td>
                         </tr>
@@ -276,25 +351,16 @@ const AdminDashboard = () => {
                         <th>Place</th>
                         <th>Email Address</th>
                         <th>Contact Number</th>
-                        <th>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {places.map((place, index) => (
+                      {approvedPlaces.map((place, index) => (
                         <tr key={place.id}>
                           <td>{index + 1}</td>
-                          <td>John Doe</td>
                           <td>{place.name}</td>
-                          <td>example@gmail.com</td>
-                          <td>09518149753</td>
-                          <td className="flex gap-3">
-                            <button className="btn btn-success btn-sm text-white">
-                              Approve
-                            </button>
-                            <button className="btn btn-error btn-sm text-white">
-                              Delete
-                            </button>
-                          </td>
+                          <td>{place.place_name}</td>
+                          <td>{place.email_address}</td>
+                          <td>{place.contact_no}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -302,19 +368,15 @@ const AdminDashboard = () => {
                 </div>
               </div>
             </div>
+            <PlaceDetailsModal
+              place={selectedPlace}
+              isOpen={isModalOpen}
+              onClose={handleCloseModal}
+            />
+            <PasswordChangeModal />
           </div>
         </div>
       </div>
-
-      {selectedPlace && (
-        <PlaceDetailsModal
-          place={selectedPlace}
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
-        />
-      )}
-
-      <PasswordChangeModal />
     </div>
   );
 };
