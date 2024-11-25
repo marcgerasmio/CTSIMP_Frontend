@@ -206,7 +206,10 @@ const Dashboard = () => {
                   htmlFor="googleMap"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  Google Map iframe
+                  Google Map iframe 
+                  <span className="ms-5">
+                    <a href="https://youtube.com/watch?v=T5FaFLeERLs&si=3rAhKhMruFZitpAb" className="text-blue-500" target="_blank">(For Tutorial, click here)</a>
+                  </span>
                 </label>
                 <textarea
                   id="googleMap"
@@ -224,6 +227,9 @@ const Dashboard = () => {
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
                   Visual Tour iframe
+                  <span className="ms-5">
+                    <a href="https://webobook.com/embedded-virtual-tour" className="text-blue-500" target="_blank">(For Tutorial, click here)</a>
+                  </span>
                 </label>
                 <textarea
                   id="visualTour"

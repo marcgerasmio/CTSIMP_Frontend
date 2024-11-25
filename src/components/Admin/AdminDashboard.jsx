@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FaSignOutAlt, FaUserCog } from "react-icons/fa";
+import { NavLink } from "react-router-dom";
 
 const AdminDashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -57,8 +58,8 @@ const AdminDashboard = () => {
     if (!isOpen) return null;
 
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white p-8 rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center z-50">
+        <div className="bg-white p-8 rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto mt-10">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-semibold">{place.place_name}</h2>
             <button
@@ -261,12 +262,14 @@ const AdminDashboard = () => {
                 >
                   <FaUserCog size={22} />
                 </button>
-                <button
+               <NavLink to="/">
+               <button
                   className="btn btn-circle btn-ghost"
                   aria-label="Sign Out"
                 >
                   <FaSignOutAlt size={22} />
                 </button>
+               </NavLink>
               </div>
             </div>
             <div role="tablist" className="tabs tabs-lifted">
@@ -368,16 +371,18 @@ const AdminDashboard = () => {
                 </div>
               </div>
             </div>
-            <PlaceDetailsModal
-              place={selectedPlace}
-              isOpen={isModalOpen}
-              onClose={handleCloseModal}
-            />
+            
             <PasswordChangeModal />
           </div>
         </div>
       </div>
+      <PlaceDetailsModal
+              place={selectedPlace}
+              isOpen={isModalOpen}
+              onClose={handleCloseModal}
+            />
     </div>
+    
   );
 };
 

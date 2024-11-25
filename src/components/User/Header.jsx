@@ -1,4 +1,5 @@
 import { FaSignOutAlt, FaTrashAlt, FaBars } from "react-icons/fa";
+import { NavLink } from "react-router-dom";
 
 const Header = ({ onOpenModal }) => (
   <div className="flex justify-between items-center mb-8">
@@ -14,6 +15,7 @@ const Header = ({ onOpenModal }) => (
       >
         <FaBars size={22} />
       </button>
+      <NavLink to="/">
       <button
         type="button"
         className="btn btn-circle btn-ghost"
@@ -21,6 +23,7 @@ const Header = ({ onOpenModal }) => (
       >
         <FaSignOutAlt size={22} />
       </button>
+      </NavLink>
     </div>
   </div>
 );
