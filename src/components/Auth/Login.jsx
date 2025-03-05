@@ -1,5 +1,6 @@
 import { useState } from "react";
-
+import { IoArrowBack } from "react-icons/io5";
+import { NavLink } from "react-router-dom";
 const Login = ({ onToggle, openModal }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -18,7 +19,7 @@ const Login = ({ onToggle, openModal }) => {
 
     try {
       // Send login request
-      const response = await fetch("https://tourism.test/api/login", {
+      const response = await fetch("http://Tourism_Backend.test/api/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -50,9 +51,20 @@ const Login = ({ onToggle, openModal }) => {
 
   return (
     <div className="w-full p-10 rounded-lg text-black bg-white/30 backdrop-blur-lg shadow-lg border border-gray-200">
-      <h1 className="text-3xl font-bold text-center text-white tracking-widest">
+      <div className="justify-start flex">
+        <NavLink to="/">
+        <button
+        className="w-15 font-bold text-white btn-sm btn-error bg-red-500 rounded-lg"
+      >
+       <IoArrowBack size={22} />
+      </button>
+        </NavLink>
+     
+      <h1 className="text-3xl font-bold text-center text-white tracking-widest ms-20">
         SIGN IN
       </h1>
+      </div>
+     
       <form onSubmit={handleSubmit} className="mt-10">
         <div className="mb-2">
           <label className="input input-bordered flex items-center gap-2">

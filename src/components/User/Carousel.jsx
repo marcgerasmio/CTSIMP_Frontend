@@ -2,11 +2,11 @@ import React, { useState, useRef, useEffect } from "react";
 import { IoChevronBackOutline, IoChevronForwardOutline } from "react-icons/io5";
 
 export default function Carousel() {
-  const [currentImageId, setCurrentImageId] = useState(1);
+  const [currentImageId, setCurrentImageId] = useState(null);
   const [translateX, setTranslateX] = useState(0);
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
-  const [images, setImages] = useState([]); 
+  const [images, setImages] = useState([]);
   const carouselRef = useRef(null);
 
   const currentImage =
@@ -14,7 +14,9 @@ export default function Carousel() {
       ? images.find((img) => img.id === currentImageId)
       : null;
 
-  const imageSrc = currentImage ? `http://tourism.test/storage/${currentImage.src}` : '';
+  const imageSrc = currentImage?.src
+    ? `http://Tourism_Backend.test/storage/${currentImage.src}`
+    : "";
 
   const handleNavigation = (direction) => {
     const currentIndex = images.findIndex((img) => img.id === currentImageId);
@@ -43,24 +45,33 @@ export default function Carousel() {
   };
 
   useEffect(() => {
-    fetch("http://tourism.test/api/approvedplaces")
+    fetch("http://Tourism_Backend.test/api/approvedplaces")
       .then((response) => response.json())
       .then((data) => {
-        setImages(data.map(place => ({
-          id: place.id,
-          src: place.image_link,
-          alt: place.name,
-          title: place.place_name,
-          email : place.email_address,
-          contact: place.contact_no,
-          description: place.description,
-          virtual_iframe: place.virtual_iframe,
-          map_iframe: place.map_iframe,
-        })));
+        setImages(
+          data.map((place) => ({
+            id: place.id,
+            src: place.image_link,
+            alt: place.name,
+            title: place.place_name,
+            email: place.email_address,
+            contact: place.contact_no,
+            description: place.description,
+            virtual_iframe: place.virtual_iframe,
+            map_iframe: place.map_iframe,
+          }))
+        );
         setImagesLoaded(true);
       })
       .catch((error) => console.error("Error fetching places:", error));
   }, []);
+
+  useEffect(() => {
+    if (images.length > 0) {
+      setCurrentImageId(images[0].id); // Set the first image ID once data is loaded
+      updateCarouselPosition();
+    }
+  }, [images]);
 
   useEffect(() => {
     updateCarouselPosition();
@@ -75,28 +86,12 @@ export default function Carousel() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  useEffect(() => {
-    const imagePromises = images.map((image) => {
-      return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.src = `http://tourism.test/storage/${image.src}`;
-        img.onload = resolve;
-        img.onerror = reject;
-      });
-    });
-
-    Promise.all(imagePromises)
-      .then(() => {
-        setImagesLoaded(true);
-        updateCarouselPosition();
-      })
-      .catch((error) => console.error("Error loading images:", error));
-  }, [images]);
-
-  if (!imagesLoaded || !images.length) {
+  if (!imagesLoaded || images.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <div className="text-2xl font-semibold text-gray-600">No Data...</div>
+        <div className="text-2xl font-semibold text-gray-600">
+          {images.length === 0 ? "No Data..." : "Loading..."}
+        </div>
       </div>
     );
   }
@@ -152,13 +147,12 @@ export default function Carousel() {
             {activeDropdown === "contact" && (
               <div className="mt-4 p-4 bg-white text-black rounded-lg shadow-lg">
                 <h3 className="font-semibold">Contact Information</h3>
-                  <p className="text-sm text-gray-700">
-                    Email: {currentImage?.email}
-                  </p>
-                  <p className="text-sm text-gray-700">
-                    Phone: {currentImage?.contact}
-                  </p>
-
+                <p className="text-sm text-gray-700">
+                  Email: {currentImage?.email}
+                </p>
+                <p className="text-sm text-gray-700">
+                  Phone: {currentImage?.contact}
+                </p>
               </div>
             )}
             {activeDropdown === "map" && (
@@ -201,7 +195,7 @@ export default function Carousel() {
                   className="flex-none w-[192px] h-[128px] bg-gray-200 rounded-lg"
                 >
                   <img
-                    src={`http://tourism.test/storage/${image.src}`}
+                    src={`http://Tourism_Backend.test/storage/${image.src}`}
                     alt={image.alt}
                     className="object-cover w-full h-full rounded-lg"
                   />

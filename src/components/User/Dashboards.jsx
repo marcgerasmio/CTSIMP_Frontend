@@ -72,7 +72,7 @@ const Dashboard = () => {
     }
 
     try {
-      const response = await fetch('http://tourism.test/api/places', {
+      const response = await fetch('http://Tourism_Backend.test/api/places', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -213,11 +213,12 @@ const Dashboard = () => {
                 </label>
                 <textarea
                   id="googleMap"
-                  placeholder="Google Map iframe"
+                  placeholder="e.g, (https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d126440.1668895862!2d123.76526621796874!3d7.972554395731812!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sph!4v1732520001105!5m2!1sen!2sph)"
                   value={formData.map_iframe || ""}
                   onChange={handleChange}
                   name="map_iframe"
                   className="textarea textarea-bordered w-full"
+                  rows={4}
                 />
               </div>
                 {/* Visual Tour iframe */}
@@ -233,11 +234,12 @@ const Dashboard = () => {
                 </label>
                 <textarea
                   id="visualTour"
-                  placeholder="e.g, <iframe src={url} title={description}></iframe>"
+                  placeholder="e.g, (https://webobook.com/public/67307f5970d3461cbc339ac2,en?ap=true&si=true&sm=false&sp=true&sfr=false&sl=false&sop=false&)"
                   value={formData.virtual_iframe || ""}
                   onChange={handleChange}
                   name="virtual_iframe"
                   className="textarea textarea-bordered w-full"
+                  rows={2}
                 />
               </div>
             </div>

@@ -21,9 +21,9 @@ const Home = () => {
         <div className="hero-content text-neutral-content text-center">
           <div className="w-2/3">
             <h1 className="mb-5 text-3xl font-extrabold tracking-widest">
-              Caraga Heritage Sites and Tourist Spot Interactive Map Portal
+              Caraga Tourist Spot Interactive Map Portal
             </h1>
-            <p className="mb-6 text-lg">
+            <p className="mb-6 text-md">
               Discover the rich cultural heritage and natural wonders of the
               Caraga region. Explore historical landmarks, breathtaking
               landscapes, and vibrant local traditions, all in one convenient

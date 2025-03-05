@@ -11,13 +11,13 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     // Fetch pending places
-    fetch("http://tourism.test/api/pending")
+    fetch("http://Tourism_Backend.test/api/pending")
       .then((response) => response.json())
       .then((data) => setPendingPlaces(data))
       .catch((error) => console.error("Error fetching pending places:", error));
 
     // Fetch approved places
-    fetch("http://tourism.test/api/approvedplaces")
+    fetch("http://Tourism_Backend.test/api/approvedplaces")
       .then((response) => response.json())
       .then((data) => setApprovedPlaces(data))
       .catch((error) => console.error("Error fetching approved places:", error));
@@ -35,7 +35,7 @@ const AdminDashboard = () => {
 
   const updatePlaceStatus = async (id, status) => {
     try {
-      const response = await fetch(`http://tourism.test/api/places/${id}/status`, {
+      const response = await fetch(`http://Tourism_Backend.test/api/places/${id}/status`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -78,7 +78,7 @@ const AdminDashboard = () => {
             <section>
               <h3 className="font-medium text-lg mb-2">Picture</h3>
               <img
-                src={`http://tourism.test/storage/${place.image_link}`}
+                src={`http://Tourism_Backend.test/storage/${place.image_link}`}
                 alt={place.name}
                 className="w-full h-auto rounded-lg"
               />
@@ -147,7 +147,7 @@ const AdminDashboard = () => {
     try {
       setLoading(true);
 
-      const response = await fetch("http://tourism.test/api/change-password", {
+      const response = await fetch("http://Tourism_Backend.test/api/change-password", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -173,13 +173,9 @@ const AdminDashboard = () => {
       setLoading(false);
     }
   };
-
-
-
-
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-8 rounded-lg w-full max-w-md">
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center z-50 h-50">
+      <div className="bg-white p-8 rounded-lg w-1/4 max-h-[60vh] overflow-y-auto mt-10">
         <h2 className="text-2xl font-semibold mb-4">Change Password</h2>
         <hr />
         <form onSubmit={handlePasswordChange}>
@@ -372,10 +368,11 @@ const AdminDashboard = () => {
               </div>
             </div>
             
-            <PasswordChangeModal />
+         
           </div>
         </div>
       </div>
+      <PasswordChangeModal />
       <PlaceDetailsModal
               place={selectedPlace}
               isOpen={isModalOpen}
