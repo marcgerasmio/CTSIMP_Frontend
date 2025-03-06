@@ -15,7 +15,7 @@ export default function Carousel() {
       : null;
 
   const imageSrc = currentImage?.src
-    ? `http://Tourism_Backend.test/storage/${currentImage.src}`
+    ? `http://tourism-backend.test/storage/${currentImage.src}`
     : "";
 
   const handleNavigation = (direction) => {
@@ -45,7 +45,7 @@ export default function Carousel() {
   };
 
   useEffect(() => {
-    fetch("http://Tourism_Backend.test/api/approvedplaces")
+    fetch("http://tourism-backend.test/api/approvedplaces")
       .then((response) => response.json())
       .then((data) => {
         setImages(
@@ -195,7 +195,7 @@ export default function Carousel() {
                   className="flex-none w-[192px] h-[128px] bg-gray-200 rounded-lg"
                 >
                   <img
-                    src={`http://Tourism_Backend.test/storage/${image.src}`}
+                    src={`http://tourism-backend.test/storage/${image.src}`}
                     alt={image.alt}
                     className="object-cover w-full h-full rounded-lg"
                   />

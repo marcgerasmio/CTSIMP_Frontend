@@ -19,7 +19,7 @@ const Login = ({ onToggle, openModal }) => {
 
     try {
       // Send login request
-      const response = await fetch("http://Tourism_Backend.test/api/login", {
+      const response = await fetch("http://tourism-backend.test/api/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

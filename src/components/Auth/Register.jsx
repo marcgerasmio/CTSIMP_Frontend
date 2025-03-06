@@ -29,7 +29,7 @@ const Register = ({ onToggle, openModal }) => {
 
     try {
       // Send the registration request using fetch
-      const response = await fetch("http://Tourism_Backend.test/api/register", {
+      const response = await fetch("http://tourism-backend.test/api/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -11,13 +11,13 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     // Fetch pending places
-    fetch("http://Tourism_Backend.test/api/pending")
+    fetch("http://tourism-backend.test/api/pending")
       .then((response) => response.json())
       .then((data) => setPendingPlaces(data))
       .catch((error) => console.error("Error fetching pending places:", error));
 
     // Fetch approved places
-    fetch("http://Tourism_Backend.test/api/approvedplaces")
+    fetch("http://tourism-backend.test/api/approvedplaces")
       .then((response) => response.json())
       .then((data) => setApprovedPlaces(data))
       .catch((error) => console.error("Error fetching approved places:", error));
@@ -35,7 +35,7 @@ const AdminDashboard = () => {
 
   const updatePlaceStatus = async (id, status) => {
     try {
-      const response = await fetch(`http://Tourism_Backend.test/api/places/${id}/status`, {
+      const response = await fetch(`http://tourism-backend.test/api/places/${id}/status`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -78,7 +78,7 @@ const AdminDashboard = () => {
             <section>
               <h3 className="font-medium text-lg mb-2">Picture</h3>
               <img
-                src={`http://Tourism_Backend.test/storage/${place.image_link}`}
+                src={`http://tourism-backend.test/storage/${place.image_link}`}
                 alt={place.name}
                 className="w-full h-auto rounded-lg"
               />
@@ -147,7 +147,7 @@ const AdminDashboard = () => {
     try {
       setLoading(true);
 
-      const response = await fetch("http://Tourism_Backend.test/api/change-password", {
+      const response = await fetch("http://tourism-backend.test/api/change-password", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
