@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { IoArrowBack } from "react-icons/io5";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useNavigate, NavLink } from "react-router-dom";
+
+const ADMIN_EMAIL = "admin@sys.cs"; // Replace with your actual admin email
 
 const Login = ({ onToggle }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Initialize navigation hook
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,15 +33,15 @@ const Login = ({ onToggle }) => {
         // Save JWT & user data
         localStorage.setItem("jwt", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
+
         sessionStorage.setItem("name", data.user.name);
 
-        const redirectPath = data.user.name === "Admin" ? "/admin" : "/dashboard";
-
-        // Ensure localStorage updates before navigation
-        setTimeout(() => {
-          navigate(redirectPath);
-          window.location.href = redirectPath; // Ensure UI updates instantly
-        }, 100);
+        // Redirect based on user role (email-based check)
+        if (data.user.email === ADMIN_EMAIL) {
+          navigate("/admin"); // Redirect to Admin Dashboard
+        } else {
+          navigate("/dashboard"); // Redirect to User Dashboard
+        }
       } else {
         alert(data.message || "Login failed. Please try again.");
       }
@@ -102,13 +104,15 @@ const Login = ({ onToggle }) => {
           </label>
         </div>
 
-        <button
-          type="submit"
-          className="w-full btn btn-warning px-4 py-3 font-bold text-white bg-yellow-500 rounded-lg"
-          disabled={isLoading}
-        >
-          {isLoading ? "Loading..." : "Login"}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="submit"
+            className="w-full btn btn-warning px-4 py-3 font-bold text-white bg-yellow-500 rounded-lg"
+            disabled={isLoading}
+          >
+            {isLoading ? "Loading..." : "Login"}
+          </button>
+        </div>
       </form>
 
       <div className="divider before:bg-white after:bg-white text-white">or</div>
@@ -122,4 +126,4 @@ const Login = ({ onToggle }) => {
   );
 };
 
-export default Login;
+export default Login; // ✅ Exporting the component properly

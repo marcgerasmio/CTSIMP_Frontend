@@ -4,7 +4,7 @@ import Auth from "./components/Auth/Auth.jsx";
 import Dashboards from "./components/User/Dashboards.jsx";
 import AdminDashboard from "./components/Admin/AdminDashboard.jsx";
 import Carousel from "./components/User/Carousel.jsx";
-import ProtectedRoute from "./components/ProtectedRoute";
+import ProtectedRoute from "./components/ProtectedRoute"; // Import ProtectedRoute
 
 const App = () => {
   return (
@@ -26,7 +26,7 @@ const App = () => {
       <Route
         path="/admin"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute adminOnly={true}>
             <AdminDashboard />
           </ProtectedRoute>
         }
