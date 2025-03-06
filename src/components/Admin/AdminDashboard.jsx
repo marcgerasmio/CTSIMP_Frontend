@@ -54,6 +54,12 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleSignOut = () => {
+    localStorage.clear(); // Clear local storage
+    // Optionally, you can also clear session storage if needed
+    // sessionStorage.clear();
+  };
+
   const PlaceDetailsModal = ({ place, isOpen, onClose }) => {
     if (!isOpen) return null;
 
@@ -262,6 +268,7 @@ const AdminDashboard = () => {
                <button
                   className="btn btn-circle btn-ghost"
                   aria-label="Sign Out"
+                  onClick={handleSignOut} // Add the onClick event handler
                 >
                   <FaSignOutAlt size={22} />
                 </button>
