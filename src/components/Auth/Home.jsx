@@ -4,10 +4,8 @@ const Home = () => {
   return (
     <>
       <div
-        className="hero min-h-screen font-mono relative"
-        style={{
-          backgroundImage: "url(bg.jpg)",
-        }}
+        className="hero min-h-screen relative"
+        style={{ backgroundImage: "url(bg.jpg)", fontFamily: "'Lexend', sans-serif" }}
       >
         {/* Add top-right link button */}
         <NavLink
@@ -23,7 +21,7 @@ const Home = () => {
             <h1 className="mb-5 text-3xl font-extrabold tracking-widest">
               Caraga Tourist Spot Interactive Map Portal
             </h1>
-            <p className="mb-6 text-md">
+            <p className="mb-6 text-lg">
               Discover the rich cultural heritage and natural wonders of the
               Caraga region. Explore historical landmarks, breathtaking
               landscapes, and vibrant local traditions, all in one convenient
