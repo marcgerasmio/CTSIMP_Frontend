@@ -54,7 +54,10 @@ const Login = ({ onToggle }) => {
   };
 
   return (
-    <div className="w-full p-10 rounded-lg text-black bg-white/30 backdrop-blur-lg shadow-lg border border-gray-200">
+    <div
+      className="w-full p-10 rounded-lg text-black bg-white/30 backdrop-blur-lg shadow-lg border border-gray-200"
+      style={{ fontFamily: "'Lexend', sans-serif" }}
+    >
       <div className="justify-start flex">
         <NavLink to="/">
           <button className="w-15 font-bold text-white btn-sm btn-error bg-red-500 rounded-lg">
@@ -126,4 +129,4 @@ const Login = ({ onToggle }) => {
   );
 };
 
-export default Login; // ✅ Exporting the component properly
+export default Login;
