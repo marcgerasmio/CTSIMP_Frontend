@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import { IoChevronBackOutline, IoChevronForwardOutline } from "react-icons/io5";
+import { useNavigate } from "react-router-dom"; // Added import
 
 export default function Carousel() {
+  const navigate = useNavigate(); // Added navigation hook
   const [currentImageId, setCurrentImageId] = useState(null);
   const [translateX, setTranslateX] = useState(0);
   const [imagesLoaded, setImagesLoaded] = useState(false);
@@ -34,7 +36,7 @@ export default function Carousel() {
   const updateCarouselPosition = () => {
     if (carouselRef.current) {
       const currentIndex = images.findIndex((img) => img.id === currentImageId);
-      const itemWidth = 192 + 16; // Update this if the item width changes
+      const itemWidth = 192 + 16;
       const newTranslateX = -currentIndex * itemWidth;
       setTranslateX(newTranslateX);
     }
@@ -68,7 +70,7 @@ export default function Carousel() {
 
   useEffect(() => {
     if (images.length > 0) {
-      setCurrentImageId(images[0].id); // Set the first image ID once data is loaded
+      setCurrentImageId(images[0].id);
       updateCarouselPosition();
     }
   }, [images]);
@@ -98,6 +100,14 @@ export default function Carousel() {
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden font-mono">
+      {/* Added home navigation button */}
+      <button
+        onClick={() => navigate("/")}
+        className="absolute top-4 left-4 z-30 text-white text-3xl p-2 bg-black/50 rounded-full hover:bg-black/70 transition-colors duration-300"
+      >
+        <IoChevronBackOutline />
+      </button>
+
       {currentImage && (
         <div className="absolute inset-0 z-0">
           <img
@@ -121,7 +131,6 @@ export default function Carousel() {
               {currentImage?.description}
             </p>
 
-            {/* Buttons placed directly below the description */}
             <div className="flex gap-4">
               <button
                 onClick={() => toggleDropdown("contact")}
@@ -143,7 +152,6 @@ export default function Carousel() {
               </button>
             </div>
 
-            {/* Dropdowns for the buttons */}
             {activeDropdown === "contact" && (
               <div className="mt-4 p-4 bg-white text-black rounded-lg shadow-lg">
                 <h3 className="font-semibold">Contact Information</h3>
