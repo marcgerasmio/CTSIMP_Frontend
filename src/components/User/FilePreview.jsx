@@ -1,32 +1,63 @@
 const FilePreview = ({ previewUrl, onFileChange, fileInputRef }) => (
   <div className="space-y-6">
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
-        Preview
+      <label className="block text-sm font-medium text-emerald-700 mb-1">
+        Destination Image Preview
       </label>
-      <div className="mt-2 relative aspect-square rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
+      <div className="mt-2 relative aspect-square rounded-lg overflow-hidden bg-emerald-50 flex items-center justify-center border-2 border-dashed border-emerald-300 shadow-sm">
         {previewUrl ? (
           <img
-            src={previewUrl}
+            src={previewUrl || "/placeholder.svg"}
             alt="Preview"
             className="w-full h-full object-cover"
           />
         ) : (
-          <span className="text-gray-500 text-sm">
-            Image preview will appear here.
-          </span>
+          <div className="text-center p-6">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-emerald-400 mx-auto mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
+            <span className="text-emerald-600 text-sm block">
+              Upload an image to see a preview here
+            </span>
+            <span className="text-emerald-500 text-xs block mt-1">
+              Recommended: High-quality landscape photos
+            </span>
+          </div>
         )}
       </div>
     </div>
     <div>
-      <input
-        id="fileUpload"
-        type="file"
-        ref={fileInputRef}
-        onChange={onFileChange}
-        className="file-input file-input-bordered w-full"
-        accept="image/*"
-      />
+      <label htmlFor="fileUpload" className="block text-sm font-medium text-emerald-700 mb-2">
+        Upload Destination Image
+      </label>
+      <div className="relative">
+        <input
+          id="fileUpload"
+          type="file"
+          ref={fileInputRef}
+          onChange={onFileChange}
+          className="hidden"
+          accept="image/*"
+        />
+        <label
+          htmlFor="fileUpload"
+          className="flex items-center justify-center w-full px-4 py-3 border border-emerald-300 rounded-md bg-white hover:bg-emerald-50 text-emerald-700 cursor-pointer transition-colors duration-200"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          {previewUrl ? "Change Image" : "Select Image"}
+        </label>
+      </div>
+      {previewUrl && (
+        <p className="mt-2 text-xs text-emerald-600">
+          Image selected. Click above to change.
+        </p>
+      )}
     </div>
   </div>
 );
