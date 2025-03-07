@@ -41,8 +41,8 @@ const Register = ({ onToggle, openModal }) => {
         // Handle successful registration
         const result = await response.json();
         console.log("Registration successful:", result);
-       alert("Registration Successfull");
-       onToggle();
+        alert("Registration Successful");
+        onToggle();
       } else {
         // Handle errors during registration
         const error = await response.json();
@@ -57,7 +57,10 @@ const Register = ({ onToggle, openModal }) => {
   };
 
   return (
-    <div className="w-full p-10 rounded-lg text-black bg-white/30 backdrop-blur-lg shadow-lg border border-gray-200">
+    <div
+      className="w-full p-10 rounded-lg text-black bg-white/30 backdrop-blur-lg shadow-lg border border-gray-200"
+      style={{ fontFamily: "'Lexend', sans-serif" }}
+    >
       <h1 className="text-3xl font-bold text-center text-white tracking-widest">
         CREATE AN ACCOUNT
       </h1>
