@@ -97,8 +97,8 @@ const Dashboard = () => {
 
   return (
     <div
-      className="min-h-screen font-mono relative bg-cover bg-center"
-      style={{ backgroundImage: "url(bg.jpg)" }}
+      className="min-h-screen relative bg-cover bg-center"
+      style={{ backgroundImage: "url(bg.jpg)", fontFamily: "'Lexend', sans-serif" }}
     >
       <div className="absolute inset-0 bg-black bg-opacity-60"></div>
       <div className="relative z-10 container mx-auto px-8 py-6">
@@ -206,7 +206,7 @@ const Dashboard = () => {
                   htmlFor="googleMap"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  Google Map iframe 
+                  Google Map iframe{" "}
                   <span className="ms-5">
                     <a href="https://youtube.com/watch?v=T5FaFLeERLs&si=3rAhKhMruFZitpAb" className="text-blue-500" target="_blank">(For Tutorial, click here)</a>
                   </span>
@@ -221,13 +221,13 @@ const Dashboard = () => {
                   rows={4}
                 />
               </div>
-                {/* Visual Tour iframe */}
-                <div>
+              {/* Visual Tour iframe */}
+              <div>
                 <label
                   htmlFor="visualTour"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  Visual Tour iframe
+                  Visual Tour iframe{" "}
                   <span className="ms-5">
                     <a href="https://webobook.com/embedded-virtual-tour" className="text-blue-500" target="_blank">(For Tutorial, click here)</a>
                   </span>
