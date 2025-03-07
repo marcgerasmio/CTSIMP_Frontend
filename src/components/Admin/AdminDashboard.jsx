@@ -48,16 +48,13 @@ const AdminDashboard = () => {
       if (!response.ok) {
         throw new Error("Failed to update status.");
       }
-
     } catch (error) {
       console.error("Error updating status:", error);
     }
   };
 
   const handleSignOut = () => {
-    localStorage.clear(); // Clear local storage
-    // Optionally, you can also clear session storage if needed
-    // sessionStorage.clear();
+    localStorage.clear();
   };
 
   const PlaceDetailsModal = ({ place, isOpen, onClose }) => {
@@ -68,10 +65,7 @@ const AdminDashboard = () => {
         <div className="bg-white p-8 rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto mt-10">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-semibold">{place.place_name}</h2>
-            <button
-              onClick={onClose}
-              className="btn btn-sm btn-circle btn-ghost"
-            >
+            <button onClick={onClose} className="btn btn-sm btn-circle btn-ghost">
               ✕
             </button>
           </div>
@@ -101,9 +95,7 @@ const AdminDashboard = () => {
               </section>
 
               <section>
-                <h3 className="font-medium text-lg mb-2">
-                 Visual Tour
-                </h3>
+                <h3 className="font-medium text-lg mb-2">Visual Tour</h3>
                 <iframe
                   src={place.virtual_iframe}
                   title="Virtual Tour"
@@ -130,123 +122,120 @@ const AdminDashboard = () => {
   const PasswordChangeModal = () => {
     if (!isPasswordModalOpen) return null;
     const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
-  const name = sessionStorage.getItem("name");
+    const [newPassword, setNewPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [success, setSuccess] = useState(null);
+    const name = sessionStorage.getItem("name");
 
-  const handlePasswordChange = async (e) => {
-    e.preventDefault();
+    const handlePasswordChange = async (e) => {
+      e.preventDefault();
+      setError(null);
+      setSuccess(null);
 
-   
-    setError(null);
-    setSuccess(null);
-
-   
-    if (newPassword !== confirmPassword) {
-      setError("New password and confirmation do not match.");
-      return;
-    }
-
-    try {
-      setLoading(true);
-
-      const response = await fetch("http://tourism-backend.test/api/change-password", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          new_password: newPassword,
-          new_password_confirmation: confirmPassword,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to change password.");
+      if (newPassword !== confirmPassword) {
+        setError("New password and confirmation do not match.");
+        return;
       }
 
-      setSuccess("Password changed successfully.");
-      setIsPasswordModalOpen(false);
-    } catch (err) {
-      setError(err.message || "Something went wrong.");
-    } finally {
-      setLoading(false);
-    }
-  };
+      try {
+        setLoading(true);
+        const response = await fetch("http://tourism-backend.test/api/change-password", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name,
+            new_password: newPassword,
+            new_password_confirmation: confirmPassword,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || "Failed to change password.");
+        }
+
+        setSuccess("Password changed successfully.");
+        setIsPasswordModalOpen(false);
+      } catch (err) {
+        setError(err.message || "Something went wrong.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center z-50 h-50">
-      <div className="bg-white p-8 rounded-lg w-1/4 max-h-[60vh] overflow-y-auto mt-10">
-        <h2 className="text-2xl font-semibold mb-4">Change Password</h2>
-        <hr />
-        <form onSubmit={handlePasswordChange}>
-          <div className="space-y-4 mt-5">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Current Password
-              </label>
-              <input
-                type="password"
-                className="input input-bordered w-full"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-              />
+        <div className="bg-white p-8 rounded-lg w-1/4 max-h-[60vh] overflow-y-auto mt-10">
+          <h2 className="text-2xl font-semibold mb-4">Change Password</h2>
+          <hr />
+          <form onSubmit={handlePasswordChange}>
+            <div className="space-y-4 mt-5">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Current Password
+                </label>
+                <input
+                  type="password"
+                  className="input input-bordered w-full"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  New Password
+                </label>
+                <input
+                  type="password"
+                  className="input input-bordered w-full"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Confirm New Password
+                </label>
+                <input
+                  type="password"
+                  className="input input-bordered w-full"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                New Password
-              </label>
-              <input
-                type="password"
-                className="input input-bordered w-full"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-              />
+            <div className="mt-6">
+              {error && <p className="text-red-500 text-sm">{error}</p>}
+              {success && <p className="text-green-500 text-sm">{success}</p>}
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Confirm New Password
-              </label>
-              <input
-                type="password"
-                className="input input-bordered w-full"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
+            <div className="mt-6 flex justify-end space-x-3">
+              <button
+                type="button"
+                onClick={() => setIsPasswordModalOpen(false)}
+                className="btn btn-outline"
+                disabled={loading}
+              >
+                Cancel
+              </button>
+              <button type="submit" className="btn btn-primary" disabled={loading}>
+                {loading ? "Changing..." : "Change Password"}
+              </button>
             </div>
-          </div>
-          <div className="mt-6">
-            {error && <p className="text-red-500 text-sm">{error}</p>}
-            {success && <p className="text-green-500 text-sm">{success}</p>}
-          </div>
-          <div className="mt-6 flex justify-end space-x-3">
-            <button
-              type="button"
-              onClick={() => setIsPasswordModalOpen(false)}
-              className="btn btn-outline"
-              disabled={loading}
-            >
-              Cancel
-            </button>
-            <button type="submit" className="btn btn-primary" disabled={loading}>
-              {loading ? "Changing..." : "Change Password"}
-            </button>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
-    </div>
     );
   };
 
   return (
     <div
-      className="min-h-screen font-mono relative bg-cover bg-center"
-      style={{ backgroundImage: "url(bg.jpg)" }}
+      className="min-h-screen relative bg-cover bg-center"
+      style={{ backgroundImage: "url(bg.jpg)", fontFamily: "'Lexend', sans-serif" }}
     >
       <div className="absolute inset-0 bg-black bg-opacity-60"></div>
       <div className="relative z-10 container mx-auto px-8 py-6">
@@ -264,15 +253,15 @@ const AdminDashboard = () => {
                 >
                   <FaUserCog size={22} />
                 </button>
-               <NavLink to="/">
-               <button
-                  className="btn btn-circle btn-ghost"
-                  aria-label="Sign Out"
-                  onClick={handleSignOut} // Add the onClick event handler
-                >
-                  <FaSignOutAlt size={22} />
-                </button>
-               </NavLink>
+                <NavLink to="/">
+                  <button
+                    className="btn btn-circle btn-ghost"
+                    aria-label="Sign Out"
+                    onClick={handleSignOut}
+                  >
+                    <FaSignOutAlt size={22} />
+                  </button>
+                </NavLink>
               </div>
             </div>
             <div role="tablist" className="tabs tabs-lifted">
@@ -304,7 +293,7 @@ const AdminDashboard = () => {
                     <tbody>
                       {pendingPlaces.map((place, index) => (
                         <tr key={place.id}>
-                         <td>{index + 1}</td>
+                          <td>{index + 1}</td>
                           <td>{place.name}</td>
                           <td>{place.place_name}</td>
                           <td>{place.email_address}</td>
@@ -374,19 +363,16 @@ const AdminDashboard = () => {
                 </div>
               </div>
             </div>
-            
-         
           </div>
         </div>
       </div>
       <PasswordChangeModal />
       <PlaceDetailsModal
-              place={selectedPlace}
-              isOpen={isModalOpen}
-              onClose={handleCloseModal}
-            />
+        place={selectedPlace}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+      />
     </div>
-    
   );
 };
 
