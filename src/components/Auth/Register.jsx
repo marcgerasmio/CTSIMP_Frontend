@@ -1,34 +1,100 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const Register = ({ onToggle, openModal }) => {
-  const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const navigate = useNavigate("");
+// If you're using Lucide React icons, import them like this:
+// import { Eye, EyeOff, Loader2, User, Mail, Lock, CheckCircle, AlertCircle, MapPin } from 'lucide-react';
+// If not, the SVG icons are included inline below
 
+const Register = ({ onToggle, openModal }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+    confirmPassword: ""
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [passwordStrength, setPasswordStrength] = useState(0);
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
+  const navigate = useNavigate();
+
+  // Handle input changes
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+
+    // Clear error when user types
+    if (errors[name]) {
+      setErrors({
+        ...errors,
+        [name]: ""
+      });
+    }
+
+    // Calculate password strength when password changes
+    if (name === "password") {
+      calculatePasswordStrength(value);
+    }
+  };
+
+  // Calculate password strength
+  const calculatePasswordStrength = (password) => {
+    let strength = 0;
+    if (password.length >= 8) strength += 1;
+    if (/[A-Z]/.test(password)) strength += 1;
+    if (/[0-9]/.test(password)) strength += 1;
+    if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+    setPasswordStrength(strength);
+  };
+
+  // Validate form
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (!formData.fullName.trim()) {
+      newErrors.fullName = "Full name is required";
+    }
+    
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Email is invalid";
+    }
+    
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+    } else if (formData.password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters";
+    }
+    
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!validateForm()) return;
+    
     setIsLoading(true);
-
-    if (password !== confirmPassword) {
-      alert("Passwords do not match!");
-      setIsLoading(false);
-      return;
-    }
 
     // Prepare the registration data
     const registrationData = {
-      name: fullName,
-      email: email,
-      password: password,
+      name: formData.fullName,
+      email: formData.email,
+      password: formData.password,
     };
 
     try {
-      // Send the registration request using fetch
       const response = await fetch("http://tourism-backend.test/api/register", {
         method: "POST",
         headers: {
@@ -38,151 +104,298 @@ const Register = ({ onToggle, openModal }) => {
       });
 
       if (response.ok) {
-        // Handle successful registration
         const result = await response.json();
         console.log("Registration successful:", result);
-        alert("Registration Successful");
-        onToggle();
+        setRegistrationSuccess(true);
+        // Show success state for 2 seconds before toggling to login
+        setTimeout(() => {
+          onToggle();
+        }, 2000);
       } else {
-        // Handle errors during registration
         const error = await response.json();
-        alert("Registration failed: " + error.message);
+        setErrors({
+          ...errors,
+          form: error.message || "Registration failed. Please try again."
+        });
       }
     } catch (error) {
       console.error("Error registering:", error);
-      alert("An error occurred during registration.");
+      setErrors({
+        ...errors,
+        form: "Network error. Please check your connection and try again."
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Get strength color
+  const getStrengthColor = () => {
+    if (passwordStrength === 0) return "bg-gray-200";
+    if (passwordStrength === 1) return "bg-red-500";
+    if (passwordStrength === 2) return "bg-yellow-500";
+    if (passwordStrength === 3) return "bg-emerald-500";
+    return "bg-green-600";
+  };
+
+  // Get strength text
+  const getStrengthText = () => {
+    if (!formData.password) return "";
+    if (passwordStrength === 1) return "Weak";
+    if (passwordStrength === 2) return "Fair";
+    if (passwordStrength === 3) return "Good";
+    return "Strong";
+  };
+
+  if (registrationSuccess) {
+    return (
+      <div className="w-full p-10 rounded-lg bg-emerald-50 shadow-lg border border-emerald-200 text-center">
+        <div className="flex flex-col items-center justify-center space-y-4">
+          {/* CheckCircle Icon */}
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-16 h-16 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+          <h2 className="text-2xl font-bold text-emerald-800">Registration Successful!</h2>
+          <p className="text-emerald-700">Welcome to Mindanao Tourism! Redirecting you to login...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div
-      className="w-full p-10 rounded-lg text-black bg-white/30 backdrop-blur-lg shadow-lg border border-gray-200"
-      style={{ fontFamily: "'Lexend', sans-serif" }}
-    >
-      <h1 className="text-3xl font-bold text-center text-white tracking-widest">
-        CREATE AN ACCOUNT
-      </h1>
-      <form onSubmit={handleSubmit} className="mt-10">
-        <div className="mb-2">
-          <label className="input input-bordered flex items-center gap-2 w-full">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 16 16"
-              fill="currentColor"
-              className="h-4 w-4 opacity-70"
-            >
-              <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm4.5 7a.5.5 0 0 0 .5-.5c0-1.597-1.01-3.07-2.663-3.868C9.682 10.257 8.876 10 8 10c-.876 0-1.682.257-2.337.632C4.01 11.43 3 12.903 3 14.5a.5.5 0 0 0 .5.5h9z" />
-            </svg>
+    <div className="w-full p-8 rounded-lg bg-gradient-to-br from-emerald-50 to-teal-50 shadow-lg border border-emerald-200">
+      <div className="flex items-center justify-center mb-6">
+        {/* Palm Tree Icon */}
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-emerald-600 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 2v8"></path>
+          <path d="M4.3 10H2c0 5.5 4.5 10 10 10s10-4.5 10-10h-2.3"></path>
+          <path d="M8 10c0-4.4 3.6-8 8-8"></path>
+          <path d="M16 10c0-4.4-3.6-8-8-8"></path>
+          <path d="M9.4 22l2.6-8 2.6 8"></path>
+        </svg>
+        <h1 className="text-2xl font-bold text-center text-emerald-800">
+          Discover Mindanao
+        </h1>
+      </div>
+      
+      <div className="text-center mb-6">
+        <h2 className="text-xl font-semibold text-emerald-700">Create an Account</h2>
+        <p className="text-sm text-emerald-600 mt-1">Join us to explore the beauty of Mindanao</p>
+      </div>
+      
+      {errors.form && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md flex items-center gap-2 text-red-700">
+          {/* AlertCircle Icon */}
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span>{errors.form}</span>
+        </div>
+      )}
+      
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="space-y-1">
+          <label htmlFor="fullName" className="text-sm font-medium text-emerald-700 block">
+            Full Name
+          </label>
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              {/* User Icon */}
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
             <input
+              id="fullName"
+              name="fullName"
               type="text"
-              className="grow"
-              placeholder="Full Name"
-              required
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
+              value={formData.fullName}
+              onChange={handleChange}
+              className={`pl-10 w-full px-4 py-2 border ${
+                errors.fullName ? "border-red-500" : "border-emerald-300"
+              } bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent`}
+              placeholder="John Doe"
             />
-          </label>
+          </div>
+          {errors.fullName && (
+            <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>
+          )}
         </div>
 
-        <div className="mb-2">
-          <label className="input input-bordered flex items-center gap-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 16 16"
-              fill="currentColor"
-              className="h-4 w-4 opacity-70"
-            >
-              <path d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z" />
-              <path d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" />
-            </svg>
+        <div className="space-y-1">
+          <label htmlFor="email" className="text-sm font-medium text-emerald-700 block">
+            Email Address
+          </label>
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              {/* Mail Icon */}
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+            </div>
             <input
+              id="email"
+              name="email"
               type="email"
-              className="grow"
-              placeholder="example@gmail.com"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={formData.email}
+              onChange={handleChange}
+              className={`pl-10 w-full px-4 py-2 border ${
+                errors.email ? "border-red-500" : "border-emerald-300"
+              } bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent`}
+              placeholder="example@email.com"
             />
-          </label>
+          </div>
+          {errors.email && (
+            <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+          )}
         </div>
 
-        <div className="mb-2">
-          <label className="input input-bordered flex items-center gap-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 16 16"
-              fill="currentColor"
-              className="h-4 w-4 opacity-70"
-            >
-              <path
-                fillRule="evenodd"
-                d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
-                clipRule="evenodd"
-              />
-            </svg>
+        <div className="space-y-1">
+          <label htmlFor="password" className="text-sm font-medium text-emerald-700 block">
+            Password
+          </label>
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              {/* Lock Icon */}
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </div>
             <input
+              id="password"
+              name="password"
               type={showPassword ? "text" : "password"}
-              placeholder="Enter a password"
-              className="grow"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={formData.password}
+              onChange={handleChange}
+              className={`pl-10 w-full px-4 py-2 border ${
+                errors.password ? "border-red-500" : "border-emerald-300"
+              } bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent`}
+              placeholder="Create a password"
             />
-          </label>
-        </div>
-
-        <div className="mb-6">
-          <label className="input input-bordered flex items-center gap-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 16 16"
-              fill="currentColor"
-              className="h-4 w-4 opacity-70"
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center"
             >
-              <path
-                fillRule="evenodd"
-                d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
-                clipRule="evenodd"
-              />
-            </svg>
+              {showPassword ? (
+                /* EyeOff Icon */
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                  <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+              ) : (
+                /* Eye Icon */
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              )}
+            </button>
+          </div>
+          {errors.password && (
+            <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+          )}
+          
+          {formData.password && (
+            <div className="mt-2">
+              <div className="flex items-center justify-between mb-1">
+                <div className="text-xs text-emerald-700">Password strength:</div>
+                <div className="text-xs font-medium" style={{ color: passwordStrength > 2 ? "#047857" : "#ca8a04" }}>
+                  {getStrengthText()}
+                </div>
+              </div>
+              <div className="h-1 w-full bg-gray-200 rounded-full overflow-hidden">
+                <div 
+                  className={`h-full ${getStrengthColor()} transition-all duration-300 ease-in-out`} 
+                  style={{ width: `${passwordStrength * 25}%` }}
+                ></div>
+              </div>
+              <div className="mt-1 text-xs text-emerald-700">
+                Use 8+ characters with a mix of letters, numbers & symbols
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="space-y-1">
+          <label htmlFor="confirmPassword" className="text-sm font-medium text-emerald-700 block">
+            Confirm Password
+          </label>
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              {/* Lock Icon */}
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </div>
             <input
+              id="confirmPassword"
+              name="confirmPassword"
               type={showPassword ? "text" : "password"}
-              placeholder="Confirm Password"
-              className="grow"
-              required
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              className={`pl-10 w-full px-4 py-2 border ${
+                errors.confirmPassword ? "border-red-500" : "border-emerald-300"
+              } bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent`}
+              placeholder="Confirm your password"
             />
-          </label>
+          </div>
+          {errors.confirmPassword && (
+            <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>
+          )}
         </div>
 
-        <div className="flex items-center justify-between mb-4">
-          <label className="flex items-center text-sm text-white">
-            <input
-              type="checkbox"
-              onChange={() => setShowPassword(!showPassword)}
-              className="mr-2 border-gray-300 rounded focus:ring-blue-500"
-            />
-            Show Password
-          </label>
-        </div>
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-medium py-2.5 px-4 rounded-md transition duration-200 flex items-center justify-center shadow-md"
+        >
+          {isLoading ? (
+            <>
+              {/* Loader Icon */}
+              <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Creating Account...
+            </>
+          ) : (
+            "Join Mindanao Tourism"
+          )}
+        </button>
 
-        <div className="flex items-center gap-2">
-          <button
-            type="submit"
-            className="w-full btn btn-warning px-4 py-3 font-bold text-white bg-yellow-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-50 flex items-center justify-center"
-            disabled={isLoading}
+        <div className="text-center mt-4">
+          <p className="text-sm text-emerald-700">Already have an account?</p>
+          <button 
+            type="button"
+            onClick={onToggle} 
+            className="mt-1 text-amber-600 hover:text-amber-700 font-medium text-sm flex items-center justify-center mx-auto"
           >
-            {isLoading ? (
-              <span>Loading...</span>
-            ) : (
-              <span>Create Account</span>
-            )}
+            {/* MapPin Icon */}
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+            Sign in to continue your journey
           </button>
         </div>
       </form>
+      
+      <div className="mt-6 pt-4 border-t border-emerald-200 text-center">
+        <p className="text-xs text-emerald-700">
+          Department of Tourism - Mindanao Region
+        </p>
+        <p className="text-xs text-emerald-600 mt-1">
+          Discover the beauty and culture of Mindanao
+        </p>
+      </div>
     </div>
   );
 };
