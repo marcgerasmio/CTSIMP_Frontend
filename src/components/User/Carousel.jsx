@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import { IoChevronBackOutline, IoChevronForwardOutline } from "react-icons/io5";
-import { useNavigate } from "react-router-dom"; // Added import
+import { useNavigate } from "react-router-dom";
 
 export default function Carousel() {
-  const navigate = useNavigate(); // Added navigation hook
+  const navigate = useNavigate();
   const [currentImageId, setCurrentImageId] = useState(null);
   const [translateX, setTranslateX] = useState(0);
   const [imagesLoaded, setImagesLoaded] = useState(false);
@@ -99,8 +99,10 @@ export default function Carousel() {
   }
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden font-mono">
-      {/* Added home navigation button */}
+    <div
+      className="relative min-h-screen w-full overflow-hidden"
+      style={{ fontFamily: "'Lexend', sans-serif" }}
+    >
       <button
         onClick={() => navigate("/")}
         className="absolute top-4 left-4 z-30 text-white text-3xl p-2 bg-black/50 rounded-full hover:bg-black/70 transition-colors duration-300"
