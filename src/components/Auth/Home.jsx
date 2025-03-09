@@ -1,4 +1,5 @@
 import { NavLink } from "react-router-dom"
+import SignInButton from "./SignInButton"
 
 const Home = () => {
   return (
@@ -32,33 +33,17 @@ const Home = () => {
           <span className="text-white font-bold text-xl tracking-wider">Caraga Tourism</span>
         </div>
 
-        <NavLink
-          to="/auth"
-          className="px-6 py-2 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-medium transition-all duration-200 shadow-md flex items-center"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 mr-2"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
-            <polyline points="10 17 15 12 10 7"></polyline>
-            <line x1="15" y1="12" x2="3" y2="12"></line>
-          </svg>
-          Sign In
-        </NavLink>
+        {/* Using the separate SignInButton component with higher z-index */}
+        <div className="relative z-20">
+          <SignInButton />
+        </div>
       </header>
 
       {/* Hero Overlay */}
       <div className="absolute inset-0 bg-black bg-opacity-60"></div>
 
-      {/* Main Content */}
-      <div className="relative z-10 flex-1 flex items-center justify-center px-4">
+      {/* Main Content - Adjust z-index to be lower than the header */}
+      <div className="relative z-5 flex-1 flex items-center justify-center px-4">
         <div className="max-w-4xl text-center">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-widest text-white mb-6 leading-tight">
             Caraga Tourist Spot Interactive Map Portal
@@ -71,7 +56,7 @@ const Home = () => {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <NavLink to="/carousel">
-              <button className="px-8 py-3 rounded-md bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-lg transition-all duration-200 shadow-lg flex items-center justify-center">
+              <button className="px-8 py-3 rounded-md bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-lg transition-all duration-200 shadow-lg flex items-center justify-center relative z-10">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-5 w-5 mr-2"
@@ -93,7 +78,7 @@ const Home = () => {
               href="https://beta.tourism.gov.ph"
               target="_blank"
               rel="noopener noreferrer"
-              className="px-8 py-3 rounded-md bg-transparent border-2 border-white hover:bg-white/10 text-white font-bold text-lg transition-all duration-200 flex items-center justify-center"
+              className="px-8 py-3 rounded-md bg-transparent border-2 border-white hover:bg-white/10 text-white font-bold text-lg transition-all duration-200 flex items-center justify-center relative z-10"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
