@@ -157,7 +157,7 @@ const Register = ({ onToggle, openModal }) => {
             <polyline points="22 4 12 14.01 9 11.01"></polyline>
           </svg>
           <h2 className="text-2xl font-bold text-emerald-800">Registration Successful!</h2>
-          <p className="text-emerald-700">Welcome to Mindanao Tourism! Redirecting you to login...</p>
+          <p className="text-emerald-700">Welcome to Caraga Tourist Spots Interactive Map Portal! Redirecting you to login...</p>
         </div>
       </div>
     );
@@ -175,13 +175,13 @@ const Register = ({ onToggle, openModal }) => {
           <path d="M9.4 22l2.6-8 2.6 8"></path>
         </svg>
         <h1 className="text-2xl font-bold text-center text-emerald-800">
-          Discover Mindanao
+          Explore Caraga Region
         </h1>
       </div>
       
       <div className="text-center mb-6">
         <h2 className="text-xl font-semibold text-emerald-700">Create an Account</h2>
-        <p className="text-sm text-emerald-600 mt-1">Join us to explore the beauty of Mindanao</p>
+        <p className="text-sm text-emerald-600 mt-1">Join us to explore the beauty of Caraga</p>
       </div>
       
       {errors.form && (
@@ -359,7 +359,7 @@ const Register = ({ onToggle, openModal }) => {
               Creating Account...
             </>
           ) : (
-            "Join Mindanao Tourism"
+            "Join Caraga Tourism"
           )}
         </button>
 
@@ -382,10 +382,10 @@ const Register = ({ onToggle, openModal }) => {
       
       <div className="mt-6 pt-4 border-t border-emerald-200 text-center">
         <p className="text-xs text-emerald-700">
-          Department of Tourism - Mindanao Region
+          Department of Tourism - Caraga Region
         </p>
         <p className="text-xs text-emerald-600 mt-1">
-          Discover the beauty and culture of Mindanao
+          Discover the beauty and culture of Caraga
         </p>
       </div>
     </div>
