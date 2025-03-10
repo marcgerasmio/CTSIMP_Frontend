@@ -157,7 +157,7 @@ export default function Carousel() {
           <div className="max-w-2xl backdrop-blur-sm p-8 rounded-lg shadow-xl">
             {/* Content with text shadow for readability without obscuring background */}
             <div className="inline-block px-3 py-1 bg-emerald-600 text-white text-xs font-medium rounded-full mb-4 shadow-sm">
-              Mindanao Destination
+              Caraga Destination
             </div>
             
             <h1 className="mb-2 text-4xl md:text-5xl font-bold text-white drop-shadow-[0_2px_3px_rgba(0,0,0,0.7)]">
@@ -355,8 +355,8 @@ export default function Carousel() {
         
         {/* Footer - Lighter and more transparent */}
         <div className="bg-emerald-900/70 backdrop-blur-sm text-center py-3 text-emerald-100 text-xs">
-          <p>Department of Tourism - Mindanao Region</p>
-          <p className="text-emerald-200 mt-1">Discover the beauty and culture of Mindanao</p>
+          <p>Department of Tourism - Caraga Region</p>
+          <p className="text-emerald-200 mt-1">Discover the beauty and culture of Caraga</p>
         </div>
       </div>
     </div>

@@ -94,7 +94,7 @@ const Login = ({ onToggle }) => {
       
       <div className="text-center mb-6">
         <h2 className="text-xl font-semibold text-emerald-700">Sign In</h2>
-        <p className="text-sm text-emerald-600 mt-1">Continue your Mindanao journey</p>
+        <p className="text-sm text-emerald-600 mt-1">Continue your journey in Caraga</p>
       </div>
       
       {error && (
@@ -233,10 +233,10 @@ const Login = ({ onToggle }) => {
       
       <div className="mt-6 pt-4 border-t border-emerald-200 text-center">
         <p className="text-xs text-emerald-700">
-          Department of Tourism - Mindanao Region
+          Department of Tourism - Caraga Region
         </p>
         <p className="text-xs text-emerald-600 mt-1">
-          Discover the beauty and culture of Mindanao
+          Discover the beauty and culture of Caraga Region
         </p>
       </div>
     </div>

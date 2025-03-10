@@ -403,7 +403,7 @@ const AdminDashboard = () => {
                 <circle cx="12" cy="10" r="3"></circle>
               </svg>
               <div>
-                <h1 className="text-2xl font-bold text-white">Mindanao Tourism</h1>
+                <h1 className="text-2xl font-bold text-white">Caraga Tourism</h1>
                 <p className="text-emerald-100 text-sm">Admin Dashboard</p>
               </div>
             </div>
@@ -584,10 +584,10 @@ const AdminDashboard = () => {
           {/* Footer */}
           <div className="bg-emerald-50 px-6 py-4 border-t border-emerald-100 text-center">
             <p className="text-xs text-emerald-700">
-              Department of Tourism - Mindanao Region
+              Department of Tourism - Caraga Region
             </p>
             <p className="text-xs text-emerald-600 mt-1">
-              Discover the beauty and culture of Mindanao
+              Discover the beauty and culture of Caraga
             </p>
           </div>
         </div>
