@@ -149,25 +149,25 @@ const Register = ({ onToggle, openModal }) => {
 
   if (registrationSuccess) {
     return (
-      <div className="w-full max-w-xl mx-auto p-10 rounded-lg bg-emerald-50 shadow-lg border border-emerald-200 text-center">
-        <div className="flex flex-col items-center justify-center space-y-4">
+      <div className="w-full min-w-[280px] max-w-md mx-auto p-4 sm:p-6 md:p-10 rounded-lg bg-emerald-50 shadow-lg border border-emerald-200 text-center">
+        <div className="flex flex-col items-center justify-center space-y-3 sm:space-y-4">
           {/* CheckCircle Icon */}
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-16 h-16 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-12 h-12 sm:w-16 sm:h-16 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
             <polyline points="22 4 12 14.01 9 11.01"></polyline>
           </svg>
-          <h2 className="text-2xl font-bold text-emerald-800">Registration Successful!</h2>
-          <p className="text-emerald-700">Welcome to Caraga Tourist Spots Interactive Map Portal! Redirecting you to login...</p>
+          <h2 className="text-xl sm:text-2xl font-bold text-emerald-800">Registration Successful!</h2>
+          <p className="text-sm sm:text-base text-emerald-700">Welcome to Caraga Tourist Spots Interactive Map Portal! Redirecting you to login...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-xxl mx-auto p-8 rounded-lg bg-gradient-to-br from-emerald-50 to-teal-50 shadow-lg border border-emerald-200">
-      <div className="flex items-center justify-center mb-6">
+    <div className="w-full min-w-[280px] max-w-md mx-auto p-3 sm:p-6 md:p-8 rounded-lg bg-gradient-to-br from-emerald-50 to-teal-50 shadow-lg border border-emerald-200">
+      <div className="flex items-center justify-center mb-3 sm:mb-6">
         {/* Improved Coconut Palm Tree Icon */}
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-emerald-600 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 sm:h-8 sm:w-8 text-emerald-600 mr-1.5 sm:mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           {/* Trunk */}
           <path d="M12 22V8" />
           {/* Palm fronds */}
@@ -180,20 +180,20 @@ const Register = ({ onToggle, openModal }) => {
           <circle cx="14" cy="10" r="1" />
           <circle cx="12" cy="12" r="1" />
         </svg>
-        <h1 className="text-2xl font-bold text-center text-emerald-800">
+        <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-center text-emerald-800">
           Explore Caraga Region
         </h1>
       </div>
       
-      <div className="text-center mb-6">
-        <h2 className="text-xl font-semibold text-emerald-700">Create an Account</h2>
-        <p className="text-sm text-emerald-600 mt-1">Join us to explore the beauty of Caraga</p>
+      <div className="text-center mb-3 sm:mb-6">
+        <h2 className="text-base sm:text-lg md:text-xl font-semibold text-emerald-700">Create an Account</h2>
+        <p className="text-xs sm:text-sm text-emerald-600 mt-0.5 sm:mt-1">Join us to explore the beauty of Caraga</p>
       </div>
       
       {errors.form && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md flex items-center gap-2 text-red-700">
+        <div className="mb-3 sm:mb-4 p-2 sm:p-3 bg-red-50 border border-red-200 rounded-md flex items-start sm:items-center gap-1.5 sm:gap-2 text-red-700 text-xs sm:text-sm">
           {/* AlertCircle Icon */}
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 sm:h-5 sm:w-5 flex-shrink-0 mt-0.5 sm:mt-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
             <line x1="12" y1="8" x2="12" y2="12"></line>
             <line x1="12" y1="16" x2="12.01" y2="16"></line>
@@ -202,15 +202,15 @@ const Register = ({ onToggle, openModal }) => {
         </div>
       )}
       
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4 md:space-y-5">
         <div className="space-y-1">
-          <label htmlFor="fullName" className="text-sm font-medium text-emerald-700 block">
+          <label htmlFor="fullName" className="text-xs sm:text-sm font-medium text-emerald-700 block">
             Full Name
           </label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <div className="absolute inset-y-0 left-0 pl-2 sm:pl-3 flex items-center pointer-events-none">
               {/* User Icon */}
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 sm:h-5 sm:w-5 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                 <circle cx="12" cy="7" r="4"></circle>
               </svg>
@@ -221,23 +221,23 @@ const Register = ({ onToggle, openModal }) => {
               type="text"
               value={formData.fullName}
               onChange={handleChange}
-              className={`pl-10 w-full px-4 py-2 border ${errors.fullName ? "border-red-500" : "border-emerald-300"} bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent`}
+              className={`pl-7 sm:pl-10 w-full px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm border ${errors.fullName ? "border-red-500" : "border-emerald-300"} bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent`}
               placeholder="John Doe"
             />
           </div>
           {errors.fullName && (
-            <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>
+            <p className="text-red-500 text-[10px] sm:text-xs mt-0.5 sm:mt-1">{errors.fullName}</p>
           )}
         </div>
 
         <div className="space-y-1">
-          <label htmlFor="email" className="text-sm font-medium text-emerald-700 block">
+          <label htmlFor="email" className="text-xs sm:text-sm font-medium text-emerald-700 block">
             Email Address
           </label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <div className="absolute inset-y-0 left-0 pl-2 sm:pl-3 flex items-center pointer-events-none">
               {/* Mail Icon */}
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 sm:h-5 sm:w-5 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                 <polyline points="22,6 12,13 2,6"></polyline>
               </svg>
@@ -248,23 +248,23 @@ const Register = ({ onToggle, openModal }) => {
               type="email"
               value={formData.email}
               onChange={handleChange}
-              className={`pl-10 w-full px-4 py-2 border ${errors.email ? "border-red-500" : "border-emerald-300"} bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent`}
+              className={`pl-7 sm:pl-10 w-full px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm border ${errors.email ? "border-red-500" : "border-emerald-300"} bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent`}
               placeholder="example@email.com"
             />
           </div>
           {errors.email && (
-            <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+            <p className="text-red-500 text-[10px] sm:text-xs mt-0.5 sm:mt-1">{errors.email}</p>
           )}
         </div>
 
         <div className="space-y-1">
-          <label htmlFor="password" className="text-sm font-medium text-emerald-700 block">
+          <label htmlFor="password" className="text-xs sm:text-sm font-medium text-emerald-700 block">
             Password
           </label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <div className="absolute inset-y-0 left-0 pl-2 sm:pl-3 flex items-center pointer-events-none">
               {/* Lock Icon */}
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 sm:h-5 sm:w-5 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                 <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
               </svg>
@@ -275,23 +275,23 @@ const Register = ({ onToggle, openModal }) => {
               type={showPassword ? "text" : "password"}
               value={formData.password}
               onChange={handleChange}
-              className={`pl-10 w-full px-4 py-2 border ${errors.password ? "border-red-500" : "border-emerald-300"} bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent`}
+              className={`pl-7 sm:pl-10 w-full px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm border ${errors.password ? "border-red-500" : "border-emerald-300"} bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent`}
               placeholder="Create a password"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center"
+              className="absolute inset-y-0 right-0 pr-2 sm:pr-3 flex items-center"
             >
               {showPassword ? (
                 /* EyeOff Icon */
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 sm:h-5 sm:w-5 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"></path>
                   <line x1="1" y1="1" x2="23" y2="23"></line>
                 </svg>
               ) : (
                 /* Eye Icon */
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 sm:h-5 sm:w-5 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                   <circle cx="12" cy="12" r="3"></circle>
                 </svg>
@@ -299,14 +299,14 @@ const Register = ({ onToggle, openModal }) => {
             </button>
           </div>
           {errors.password && (
-            <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+            <p className="text-red-500 text-[10px] sm:text-xs mt-0.5 sm:mt-1">{errors.password}</p>
           )}
           
           {formData.password && (
-            <div className="mt-2">
-              <div className="flex items-center justify-between mb-1">
-                <div className="text-xs text-emerald-700">Password strength:</div>
-                <div className="text-xs font-medium" style={{ color: passwordStrength > 2 ? "#047857" : "#ca8a04" }}>
+            <div className="mt-1 sm:mt-2">
+              <div className="flex items-center justify-between mb-0.5 sm:mb-1">
+                <div className="text-[10px] sm:text-xs text-emerald-700">Password strength:</div>
+                <div className="text-[10px] sm:text-xs font-medium" style={{ color: passwordStrength > 2 ? "#047857" : "#ca8a04" }}>
                   {getStrengthText()}
                 </div>
               </div>
@@ -316,7 +316,7 @@ const Register = ({ onToggle, openModal }) => {
                   style={{ width: `${passwordStrength * 25}%` }}
                 ></div>
               </div>
-              <div className="mt-1 text-xs text-emerald-700">
+              <div className="mt-0.5 sm:mt-1 text-[10px] sm:text-xs text-emerald-700">
                 Use 8+ characters with a mix of letters, numbers & symbols
               </div>
             </div>
@@ -324,13 +324,13 @@ const Register = ({ onToggle, openModal }) => {
         </div>
 
         <div className="space-y-1">
-          <label htmlFor="confirmPassword" className="text-sm font-medium text-emerald-700 block">
+          <label htmlFor="confirmPassword" className="text-xs sm:text-sm font-medium text-emerald-700 block">
             Confirm Password
           </label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <div className="absolute inset-y-0 left-0 pl-2 sm:pl-3 flex items-center pointer-events-none">
               {/* Lock Icon */}
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 sm:h-5 sm:w-5 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                 <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
               </svg>
@@ -341,24 +341,24 @@ const Register = ({ onToggle, openModal }) => {
               type={showPassword ? "text" : "password"}
               value={formData.confirmPassword}
               onChange={handleChange}
-              className={`pl-10 w-full px-4 py-2 border ${errors.confirmPassword ? "border-red-500" : "border-emerald-300"} bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent`}
+              className={`pl-7 sm:pl-10 w-full px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm border ${errors.confirmPassword ? "border-red-500" : "border-emerald-300"} bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent`}
               placeholder="Confirm your password"
             />
           </div>
           {errors.confirmPassword && (
-            <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>
+            <p className="text-red-500 text-[10px] sm:text-xs mt-0.5 sm:mt-1">{errors.confirmPassword}</p>
           )}
         </div>
 
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-medium py-2.5 px-4 rounded-md transition duration-200 flex items-center justify-center shadow-md"
+          className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-medium py-1.5 sm:py-2.5 px-3 sm:px-4 text-xs sm:text-sm md:text-base rounded-md transition duration-200 flex items-center justify-center shadow-md mt-1 sm:mt-2"
         >
           {isLoading ? (
             <>
               {/* Loader Icon */}
-              <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <svg className="animate-spin -ml-1 mr-1.5 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
@@ -369,15 +369,15 @@ const Register = ({ onToggle, openModal }) => {
           )}
         </button>
 
-        <div className="text-center mt-4">
-          <p className="text-sm text-emerald-700">Already have an account?</p>
+        <div className="text-center mt-3 sm:mt-4">
+          <p className="text-xs sm:text-sm text-emerald-700">Already have an account?</p>
           <button 
             type="button"
             onClick={onToggle} 
-            className="mt-1 text-amber-600 hover:text-amber-700 font-medium text-sm flex items-center justify-center mx-auto"
+            className="mt-0.5 sm:mt-1 text-amber-600 hover:text-amber-700 font-medium text-xs sm:text-sm flex items-center justify-center mx-auto"
           >
             {/* MapPin Icon */}
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-4 sm:w-4 mr-0.5 sm:mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
               <circle cx="12" cy="10" r="3"></circle>
             </svg>
@@ -386,11 +386,11 @@ const Register = ({ onToggle, openModal }) => {
         </div>
       </form>
       
-      <div className="mt-6 pt-4 border-t border-emerald-200 text-center">
-        <p className="text-xs text-emerald-700">
+      <div className="mt-4 pt-2 sm:mt-6 sm:pt-4 border-t border-emerald-200 text-center">
+        <p className="text-[10px] sm:text-xs text-emerald-700">
           Department of Tourism - Caraga Region
         </p>
-        <p className="text-xs text-emerald-600 mt-1">
+        <p className="text-[10px] sm:text-xs text-emerald-600 mt-0.5 sm:mt-1">
           Discover the beauty and culture of Caraga
         </p>
       </div>
