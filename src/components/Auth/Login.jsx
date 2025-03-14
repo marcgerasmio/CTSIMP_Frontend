@@ -116,16 +116,16 @@ const Login = ({ onToggle }) => {
   }
 
   return (
-    <div className="w-full p-8 rounded-lg bg-gradient-to-br from-emerald-50 to-teal-50 shadow-lg border border-emerald-200">
-      <div className="flex items-center justify-between mb-6">
+    <div className="w-full min-w-[280px] max-w-md mx-auto p-3 sm:p-6 md:p-8 rounded-lg bg-gradient-to-br from-emerald-50 to-teal-50 shadow-lg border border-emerald-200">
+      <div className="flex items-center justify-between mb-3 sm:mb-6">
         <NavLink
           to="/"
-          className="flex items-center justify-center w-9 h-9 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white transition-colors"
+          className="flex items-center justify-center w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white transition-colors"
         >
           {/* Back Arrow Icon */}
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
+            className="h-3.5 w-3.5 sm:h-5 sm:w-5"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -141,7 +141,7 @@ const Login = ({ onToggle }) => {
           {/* Map Icon */}
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-7 w-7 text-emerald-600 mr-2"
+            className="h-4 w-4 sm:h-6 sm:w-6 md:h-7 md:w-7 text-emerald-600 mr-1 sm:mr-2"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -153,22 +153,22 @@ const Login = ({ onToggle }) => {
             <line x1="8" y1="2" x2="8" y2="18"></line>
             <line x1="16" y1="6" x2="16" y2="22"></line>
           </svg>
-          <h1 className="text-2xl font-bold text-emerald-800">Welcome Back</h1>
+          <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-emerald-800">Welcome Back</h1>
         </div>
-        <div className="w-9"></div> {/* Empty div for balance */}
+        <div className="w-7 sm:w-9"></div> {/* Empty div for balance */}
       </div>
 
-      <div className="text-center mb-6">
-        <h2 className="text-xl font-semibold text-emerald-700">Sign In</h2>
-        <p className="text-sm text-emerald-600 mt-1">Continue your journey in Caraga</p>
+      <div className="text-center mb-3 sm:mb-6">
+        <h2 className="text-base sm:text-lg md:text-xl font-semibold text-emerald-700">Sign In</h2>
+        <p className="text-xs sm:text-sm text-emerald-600 mt-0.5 sm:mt-1">Continue your journey in Caraga</p>
       </div>
 
       {error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md flex items-center gap-2 text-red-700">
+        <div className="mb-3 sm:mb-4 p-2 sm:p-3 bg-red-50 border border-red-200 rounded-md flex items-start sm:items-center gap-1.5 sm:gap-2 text-red-700 text-xs sm:text-sm">
           {/* AlertCircle Icon */}
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
+            className="h-3.5 w-3.5 sm:h-5 sm:w-5 flex-shrink-0 mt-0.5 sm:mt-0"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -184,17 +184,17 @@ const Login = ({ onToggle }) => {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4 md:space-y-5">
         <div className="space-y-1">
-          <label htmlFor="email" className="text-sm font-medium text-emerald-700 block">
+          <label htmlFor="email" className="text-xs sm:text-sm font-medium text-emerald-700 block">
             Email Address
           </label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <div className="absolute inset-y-0 left-0 pl-2 sm:pl-3 flex items-center pointer-events-none">
               {/* Mail Icon */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-emerald-500"
+                className="h-3.5 w-3.5 sm:h-5 sm:w-5 text-emerald-500"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -212,7 +212,7 @@ const Login = ({ onToggle }) => {
               type="email"
               value={formData.email}
               onChange={handleChange}
-              className="pl-10 w-full px-4 py-2 border border-emerald-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              className="pl-7 sm:pl-10 w-full px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm border border-emerald-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
               placeholder="example@email.com"
               required
             />
@@ -220,15 +220,15 @@ const Login = ({ onToggle }) => {
         </div>
 
         <div className="space-y-1">
-          <label htmlFor="password" className="text-sm font-medium text-emerald-700 block">
+          <label htmlFor="password" className="text-xs sm:text-sm font-medium text-emerald-700 block">
             Password
           </label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <div className="absolute inset-y-0 left-0 pl-2 sm:pl-3 flex items-center pointer-events-none">
               {/* Lock Icon */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-emerald-500"
+                className="h-3.5 w-3.5 sm:h-5 sm:w-5 text-emerald-500"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -246,20 +246,20 @@ const Login = ({ onToggle }) => {
               type={showPassword ? "text" : "password"}
               value={formData.password}
               onChange={handleChange}
-              className="pl-10 w-full px-4 py-2 border border-emerald-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              className="pl-7 sm:pl-10 w-full px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm border border-emerald-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
               placeholder="Enter your password"
               required
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center"
+              className="absolute inset-y-0 right-0 pr-2 sm:pr-3 flex items-center"
             >
               {showPassword ? (
                 /* EyeOff Icon */
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-emerald-500"
+                  className="h-3.5 w-3.5 sm:h-5 sm:w-5 text-emerald-500"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -274,7 +274,7 @@ const Login = ({ onToggle }) => {
                 /* Eye Icon */
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-emerald-500"
+                  className="h-3.5 w-3.5 sm:h-5 sm:w-5 text-emerald-500"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -291,29 +291,28 @@ const Login = ({ onToggle }) => {
         </div>
 
         <div className="flex items-center justify-between">
-          <label className="flex items-center text-sm text-emerald-700">
+          <label className="flex items-center text-xs sm:text-sm text-emerald-700">
             <input
               type="checkbox"
               name="rememberMe"
               checked={formData.rememberMe}
               onChange={handleChange}
-              className="mr-2 h-4 w-4 rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500"
+              className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500"
             />
             Remember Me
           </label>
-          
         </div>
 
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-medium py-2.5 px-4 rounded-md transition duration-200 flex items-center justify-center shadow-md"
+          className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-medium py-1.5 sm:py-2.5 px-3 sm:px-4 text-xs sm:text-sm md:text-base rounded-md transition duration-200 flex items-center justify-center shadow-md"
         >
           {isLoading ? (
             <>
               {/* Loader Icon */}
               <svg
-                className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                className="animate-spin -ml-1 mr-1.5 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 text-white"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -333,20 +332,20 @@ const Login = ({ onToggle }) => {
         </button>
       </form>
 
-      <div className="relative flex items-center justify-center mt-6 mb-6">
+      <div className="relative flex items-center justify-center mt-4 mb-4 sm:mt-5 sm:mb-5">
         <div className="absolute border-t border-emerald-200 w-full"></div>
-        <div className="relative bg-gradient-to-br from-emerald-50 to-teal-50 px-4 text-sm text-emerald-600">or</div>
+        <div className="relative bg-gradient-to-br from-emerald-50 to-teal-50 px-2 sm:px-4 text-xs sm:text-sm text-emerald-600">or</div>
       </div>
 
       <button
         type="button"
         onClick={onToggle}
-        className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-medium py-2.5 px-4 rounded-md transition duration-200 flex items-center justify-center shadow-md"
+        className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-medium py-1.5 sm:py-2.5 px-3 sm:px-4 text-xs sm:text-sm md:text-base rounded-md transition duration-200 flex items-center justify-center shadow-md"
       >
         {/* UserPlus Icon */}
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="h-5 w-5 mr-2"
+          className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 mr-1 sm:mr-2"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -362,13 +361,12 @@ const Login = ({ onToggle }) => {
         Create an Account
       </button>
 
-      <div className="mt-6 pt-4 border-t border-emerald-200 text-center">
-        <p className="text-xs text-emerald-700">Department of Tourism - Caraga Region</p>
-        <p className="text-xs text-emerald-600 mt-1">Discover the beauty and culture of Caraga Region</p>
+      <div className="mt-4 pt-2 sm:mt-5 sm:pt-3 border-t border-emerald-200 text-center">
+        <p className="text-[10px] sm:text-xs text-emerald-700">Department of Tourism - Caraga Region</p>
+        <p className="text-[10px] sm:text-xs text-emerald-600 mt-0.5 sm:mt-1">Discover the beauty and culture of Caraga Region</p>
       </div>
     </div>
   )
 }
 
 export default Login
-
