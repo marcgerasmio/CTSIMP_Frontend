@@ -13,12 +13,12 @@ const Home = () => {
       }}
     >
       {/* Navigation */}
-      <header className="absolute w-full z-10 px-6 py-4 flex justify-between items-center">
+      <header className="absolute w-full z-10 px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center">
         <div className="flex items-center">
           {/* Map Icon */}
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-8 w-8 text-white mr-2"
+            className="h-6 w-6 sm:h-8 sm:w-8 text-white mr-2"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -30,7 +30,7 @@ const Home = () => {
             <line x1="8" y1="2" x2="8" y2="18"></line>
             <line x1="16" y1="6" x2="16" y2="22"></line>
           </svg>
-          <span className="text-white font-bold text-xl tracking-wider">Caraga Tourism</span>
+          <span className="text-white font-bold text-base sm:text-xl tracking-wider">Caraga Tourism</span>
         </div>
 
         {/* Using the separate SignInButton component with higher z-index */}
@@ -43,23 +43,23 @@ const Home = () => {
       <div className="absolute inset-0 bg-black bg-opacity-60"></div>
 
       {/* Main Content - Adjust z-index to be lower than the header */}
-      <div className="relative z-5 flex-1 flex items-center justify-center px-4">
-        <div className="max-w-4xl text-center">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-widest text-white mb-6 leading-tight">
+      <div className="relative z-5 flex-1 flex items-center justify-center px-4 sm:px-6 md:px-8 py-16 md:py-0">
+        <div className="max-w-4xl text-center mt-16 sm:mt-0">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-wider sm:tracking-widest text-white mb-4 sm:mb-6 leading-tight">
             Caraga Tourist Spot Interactive Map Portal
           </h1>
 
-          <p className="text-lg md:text-xl text-white/90 mb-8 max-w-3xl mx-auto">
+          <p className="text-base sm:text-lg md:text-xl text-white/90 mb-6 sm:mb-8 max-w-3xl mx-auto px-2">
             Discover the rich cultural heritage and natural wonders of the Caraga region. Explore historical landmarks,
             breathtaking landscapes, and vibrant local traditions, all in one convenient platform.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <NavLink to="/carousel">
-              <button className="px-8 py-3 rounded-md bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-lg transition-all duration-200 shadow-lg flex items-center justify-center relative z-10">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4 sm:px-0">
+            <NavLink to="/carousel" className="w-full sm:w-auto">
+              <button className="w-full px-6 sm:px-8 py-2.5 sm:py-3 rounded-md bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-base sm:text-lg transition-all duration-200 shadow-lg flex items-center justify-center relative z-10">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 mr-2"
+                  className="h-4 w-4 sm:h-5 sm:w-5 mr-2"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -78,11 +78,11 @@ const Home = () => {
               href="https://beta.tourism.gov.ph"
               target="_blank"
               rel="noopener noreferrer"
-              className="px-8 py-3 rounded-md bg-transparent border-2 border-white hover:bg-white/10 text-white font-bold text-lg transition-all duration-200 flex items-center justify-center relative z-10"
+              className="w-full sm:w-auto px-6 sm:px-8 py-2.5 sm:py-3 rounded-md bg-transparent border-2 border-white hover:bg-white/10 text-white font-bold text-base sm:text-lg transition-all duration-200 flex items-center justify-center relative z-10"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 mr-2"
+                className="h-4 w-4 sm:h-5 sm:w-5 mr-2"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -101,8 +101,8 @@ const Home = () => {
       </div>
 
       {/* Footer */}
-      <footer className="relative z-10 py-4 text-center text-white/70">
-        <p className="text-sm">
+      <footer className="relative z-10 py-3 sm:py-4 text-center text-white/70 mt-4 sm:mt-0">
+        <p className="text-xs sm:text-sm">
           © {new Date().getFullYear()} Department of Tourism - Caraga Region. All rights reserved.
         </p>
       </footer>
@@ -111,4 +111,3 @@ const Home = () => {
 }
 
 export default Home
-
