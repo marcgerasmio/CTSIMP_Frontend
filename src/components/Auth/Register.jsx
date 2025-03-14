@@ -166,13 +166,19 @@ const Register = ({ onToggle, openModal }) => {
   return (
     <div className="w-full max-w-xxl mx-auto p-8 rounded-lg bg-gradient-to-br from-emerald-50 to-teal-50 shadow-lg border border-emerald-200">
       <div className="flex items-center justify-center mb-6">
-        {/* Palm Tree Icon */}
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-emerald-600 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 2v8"></path>
-          <path d="M4.3 10H2c0 5.5 4.5 10 10 10s10-4.5 10-10h-2.3"></path>
-          <path d="M8 10c0-4.4 3.6-8 8-8"></path>
-          <path d="M16 10c0-4.4-3.6-8-8-8"></path>
-          <path d="M9.4 22l2.6-8 2.6 8"></path>
+        {/* Improved Coconut Palm Tree Icon */}
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-emerald-600 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          {/* Trunk */}
+          <path d="M12 22V8" />
+          {/* Palm fronds */}
+          <path d="M12 8C12 8 9 4 6 6C3 8 7 10 7 10" />
+          <path d="M12 8C12 8 15 4 18 6C21 8 17 10 17 10" />
+          <path d="M12 6C12 6 10 2 7 3C4 4 8 7 8 7" />
+          <path d="M12 6C12 6 14 2 17 3C20 4 16 7 16 7" />
+          {/* Coconuts */}
+          <circle cx="10" cy="10" r="1" />
+          <circle cx="14" cy="10" r="1" />
+          <circle cx="12" cy="12" r="1" />
         </svg>
         <h1 className="text-2xl font-bold text-center text-emerald-800">
           Explore Caraga Region
