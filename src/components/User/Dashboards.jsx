@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import Header from "./Header"
 import FilePreview from "./FilePreview"
 import Modal from "./Modal"
@@ -25,6 +26,7 @@ const Dashboard = () => {
     image_link: null,
     status: "Pending",
   })
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const fileInputRef = useRef(null)
 
@@ -83,6 +85,8 @@ const Dashboard = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setIsSubmitting(true)
+
     const formDataToSubmit = new FormData()
 
     // Append form data
@@ -115,17 +119,66 @@ const Dashboard = () => {
     } catch (error) {
       console.error("Error:", error)
       showNotification("Error submitting form. Please try again.", "error")
+    } finally {
+      setIsSubmitting(false)
     }
+  }
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        when: "beforeChildren",
+        staggerChildren: 0.1,
+        duration: 0.5,
+      },
+    },
+  }
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: { type: "spring", stiffness: 100 },
+    },
+  }
+
+  const formVariants = {
+    hidden: { scale: 0.98, opacity: 0 },
+    visible: {
+      scale: 1,
+      opacity: 1,
+      transition: { duration: 0.5 },
+    },
   }
 
   return (
     <div className="min-h-screen relative bg-cover bg-center" style={{ backgroundImage: "url(bg.jpg)" }}>
       <div className="absolute inset-0 bg-emerald-900 bg-opacity-80"></div>
-      <div className="relative z-10 container mx-auto px-4 py-8">
-        <form className="bg-white rounded-lg shadow-xl overflow-hidden" onSubmit={handleSubmit}>
-          <div className="bg-gradient-to-r from-emerald-600 to-teal-600 p-6">
+      <motion.div
+        className="relative z-10 container mx-auto px-4 py-8"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        <motion.form
+          className="bg-white rounded-lg shadow-xl overflow-hidden"
+          variants={formVariants}
+          initial="hidden"
+          animate="visible"
+          onSubmit={handleSubmit}
+        >
+          <motion.div
+            className="bg-gradient-to-r from-emerald-600 to-teal-600 p-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+          >
             <div className="flex items-center">
-              <svg
+              <motion.svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-8 w-8 text-white mr-3"
                 viewBox="0 0 24 24"
@@ -134,25 +187,37 @@ const Dashboard = () => {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
+                initial={{ rotate: -90, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.5 }}
               >
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                 <circle cx="12" cy="10" r="3"></circle>
-              </svg>
-              <div>
+              </motion.svg>
+              <motion.div
+                initial={{ x: -20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.6 }}
+              >
                 <h1 className="text-2xl font-bold text-white">Caraga Tourism</h1>
                 <p className="text-emerald-100 text-sm">Submit a New Destination</p>
-              </div>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
 
           <div className="p-6">
             <Header onOpenModal={() => setIsModalOpen(true)} />
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              <div className="lg:col-span-2 space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <motion.div
+              className="grid grid-cols-1 lg:grid-cols-3 gap-8"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+            >
+              <motion.div className="lg:col-span-2 space-y-6" variants={containerVariants}>
+                <motion.div className="grid grid-cols-1 sm:grid-cols-2 gap-4" variants={containerVariants}>
                   {/* Place Name */}
-                  <div>
+                  <motion.div variants={itemVariants}>
                     <label htmlFor="place_name" className="block text-sm font-medium text-emerald-700 mb-1">
                       Place Name
                     </label>
@@ -179,13 +244,13 @@ const Dashboard = () => {
                         value={formData.place_name || ""}
                         onChange={handleChange}
                         name="place_name"
-                        className="pl-10 w-full px-4 py-2 border border-emerald-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                        className="pl-10 w-full px-4 py-2 border border-emerald-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300"
                       />
                     </div>
-                  </div>
+                  </motion.div>
 
                   {/* Address */}
-                  <div>
+                  <motion.div variants={itemVariants}>
                     <label htmlFor="address" className="block text-sm font-medium text-emerald-700 mb-1">
                       Address
                     </label>
@@ -212,13 +277,13 @@ const Dashboard = () => {
                         value={formData.address || ""}
                         onChange={handleChange}
                         name="address"
-                        className="pl-10 w-full px-4 py-2 border border-emerald-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                        className="pl-10 w-full px-4 py-2 border border-emerald-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300"
                       />
                     </div>
-                  </div>
+                  </motion.div>
 
                   {/* Email Address */}
-                  <div>
+                  <motion.div variants={itemVariants}>
                     <label htmlFor="email" className="block text-sm font-medium text-emerald-700 mb-1">
                       Email Address
                     </label>
@@ -245,13 +310,13 @@ const Dashboard = () => {
                         value={formData.email_address || ""}
                         onChange={handleChange}
                         name="email_address"
-                        className="pl-10 w-full px-4 py-2 border border-emerald-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                        className="pl-10 w-full px-4 py-2 border border-emerald-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300"
                       />
                     </div>
-                  </div>
+                  </motion.div>
 
                   {/* Contact No */}
-                  <div>
+                  <motion.div variants={itemVariants}>
                     <label htmlFor="contact" className="block text-sm font-medium text-emerald-700 mb-1">
                       Contact No.
                     </label>
@@ -277,14 +342,14 @@ const Dashboard = () => {
                         value={formData.contact_no || ""}
                         onChange={handleChange}
                         name="contact_no"
-                        className="pl-10 w-full px-4 py-2 border border-emerald-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                        className="pl-10 w-full px-4 py-2 border border-emerald-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300"
                       />
                     </div>
-                  </div>
-                </div>
+                  </motion.div>
+                </motion.div>
 
                 {/* Description */}
-                <div>
+                <motion.div variants={itemVariants}>
                   <label htmlFor="description" className="block text-sm font-medium text-emerald-700 mb-1">
                     Description
                   </label>
@@ -313,19 +378,19 @@ const Dashboard = () => {
                       value={formData.description || ""}
                       onChange={handleChange}
                       name="description"
-                      className="pl-10 w-full px-4 py-2 border border-emerald-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent min-h-[120px]"
+                      className="pl-10 w-full px-4 py-2 border border-emerald-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent min-h-[120px] transition-all duration-300"
                     />
                   </div>
-                </div>
+                </motion.div>
 
                 {/* Google Map iframe */}
-                <div>
+                <motion.div variants={itemVariants}>
                   <label htmlFor="googleMap" className="block text-sm font-medium text-emerald-700 mb-1">
                     Google Map iframe
                     <span className="ml-5">
                       <a
                         href="https://youtube.com/watch?v=T5FaFLeERLs&si=3rAhKhMruFZitpAb"
-                        className="text-emerald-600 hover:text-emerald-700 underline"
+                        className="text-emerald-600 hover:text-emerald-700 underline transition-colors duration-300"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -356,20 +421,20 @@ const Dashboard = () => {
                       value={formData.map_iframe || ""}
                       onChange={handleChange}
                       name="map_iframe"
-                      className="pl-10 w-full px-4 py-2 border border-emerald-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent min-h-[100px]"
+                      className="pl-10 w-full px-4 py-2 border border-emerald-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent min-h-[100px] transition-all duration-300"
                       rows={4}
                     />
                   </div>
-                </div>
+                </motion.div>
 
                 {/* Visual Tour iframe */}
-                <div>
+                <motion.div variants={itemVariants}>
                   <label htmlFor="visualTour" className="block text-sm font-medium text-emerald-700 mb-1">
                     Visual Tour iframe
                     <span className="ml-5">
                       <a
                         href="https://webobook.com/embedded-virtual-tour"
-                        className="text-emerald-600 hover:text-emerald-700 underline"
+                        className="text-emerald-600 hover:text-emerald-700 underline transition-colors duration-300"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -399,111 +464,157 @@ const Dashboard = () => {
                       value={formData.virtual_iframe || ""}
                       onChange={handleChange}
                       name="virtual_iframe"
-                      className="pl-10 w-full px-4 py-2 border border-emerald-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent min-h-[80px]"
+                      className="pl-10 w-full px-4 py-2 border border-emerald-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent min-h-[80px] transition-all duration-300"
                       rows={2}
                     />
                   </div>
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
 
               {/* Image Preview */}
-              <div className="lg:col-span-1">
+              <motion.div className="lg:col-span-1" variants={itemVariants}>
                 <FilePreview previewUrl={previewUrl} onFileChange={handleFileChange} fileInputRef={fileInputRef} />
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
 
-            <div className="mt-8 flex justify-end">
-              <button
+            <motion.div className="mt-8 flex justify-end" variants={itemVariants}>
+              <motion.button
                 type="submit"
-                className="px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-medium rounded-md transition duration-200 flex items-center justify-center shadow-md"
+                className="px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-medium rounded-md transition duration-300 flex items-center justify-center shadow-md relative overflow-hidden"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                disabled={isSubmitting}
               >
-                <svg
+                {isSubmitting ? (
+                  <svg
+                    className="animate-spin h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                ) : (
+                  <>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 mr-2"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                      <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                      <polyline points="7 3 7 8 15 8"></polyline>
+                    </svg>
+                    Submit Destination
+                  </>
+                )}
+              </motion.button>
+            </motion.div>
+          </div>
+
+          <motion.div
+            className="bg-emerald-50 px-6 py-4 border-t border-emerald-100 text-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8, duration: 0.5 }}
+          >
+            <p className="text-xs text-emerald-700">Department of Tourism - Caraga Region</p>
+            <p className="text-xs text-emerald-600 mt-1">Discover the beauty and culture of Caraga</p>
+          </motion.div>
+        </motion.form>
+      </motion.div>
+
+      <AnimatePresence>{isModalOpen && <Modal onClose={() => setIsModalOpen(false)} />}</AnimatePresence>
+
+      {/* Notification Snackbar */}
+      <AnimatePresence>
+        {snackbar.show && (
+          <motion.div
+            initial={{ x: 300, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: 300, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 200, damping: 20 }}
+            className={`fixed bottom-4 right-4 z-50 px-6 py-3 rounded-md shadow-lg flex items-center ${
+              snackbar.color === "success" ? "bg-emerald-600 text-white" : "bg-red-600 text-white"
+            }`}
+          >
+            <span className="mr-2">
+              {snackbar.color === "success" ? (
+                <motion.svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 mr-2"
+                  className="h-5 w-5"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1, rotate: [0, 20, 0] }}
+                  transition={{ delay: 0.2, duration: 0.5 }}
                 >
-                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                  <polyline points="17 21 17 13 7 13 7 21"></polyline>
-                  <polyline points="7 3 7 8 15 8"></polyline>
-                </svg>
-                Submit Destination
-              </button>
-            </div>
-          </div>
-
-          <div className="bg-emerald-50 px-6 py-4 border-t border-emerald-100 text-center">
-            <p className="text-xs text-emerald-700">Department of Tourism - Caraga Region</p>
-            <p className="text-xs text-emerald-600 mt-1">Discover the beauty and culture of Caraga</p>
-          </div>
-        </form>
-      </div>
-      {isModalOpen && <Modal onClose={() => setIsModalOpen(false)} />}
-
-      {/* Notification Snackbar */}
-      {snackbar.show && (
-        <div
-          className={`fixed bottom-4 right-4 z-50 px-6 py-3 rounded-md shadow-lg flex items-center ${
-            snackbar.color === "success" ? "bg-emerald-600 text-white" : "bg-red-600 text-white"
-          }`}
-        >
-          <span className="mr-2">
-            {snackbar.color === "success" ? (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-              </svg>
-            ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="8" x2="12" y2="12"></line>
-                <line x1="12" y1="16" x2="12.01" y2="16"></line>
-              </svg>
-            )}
-          </span>
-          {snackbar.text}
-          <button
-            onClick={() => setSnackbar((prev) => ({ ...prev, show: false }))}
-            className="ml-4 text-white hover:text-gray-200"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </motion.svg>
+              ) : (
+                <motion.svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.2, duration: 0.5 }}
+                >
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </motion.svg>
+              )}
+            </span>
+            <span>{snackbar.text}</span>
+            <button
+              onClick={() => setSnackbar((prev) => ({ ...prev, show: false }))}
+              className="ml-4 text-white hover:text-gray-200 transition-colors duration-300"
             >
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
-        </div>
-      )}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
