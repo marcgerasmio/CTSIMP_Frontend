@@ -8,19 +8,37 @@ const AdminDashboard = () => {
   const [pendingPlaces, setPendingPlaces] = useState([]);
   const [approvedPlaces, setApprovedPlaces] = useState([]);
   const [activeTab, setActiveTab] = useState("pending");
+  const [pendingUsers, setPendingUsers] = useState([]);
+  const [approvedUsers, setApprovedUsers] = useState([]);
+  const [userActionDropdown, setUserActionDropdown] = useState({});
+  const [userRemarks, setUserRemarks] = useState({});
+  const [userStatus, setUserStatus] = useState({});
+  const [selectedUser, setSelectedUser] = useState(null);
 
   useEffect(() => {
     // Fetch pending places
-    fetch("http://tourism-backend.test/api/pending")
+    fetch("http://tourism.test/api/pending")
       .then((response) => response.json())
       .then((data) => setPendingPlaces(data))
       .catch((error) => console.error("Error fetching pending places:", error));
 
     // Fetch approved places
-    fetch("http://tourism-backend.test/api/approvedplaces")
+    fetch("http://tourism.test/api/approvedplaces")
       .then((response) => response.json())
       .then((data) => setApprovedPlaces(data))
       .catch((error) => console.error("Error fetching approved places:", error));
+
+    // Fetch pending users
+    fetch("http://tourism.test/api/users/pending")
+      .then((response) => response.json())
+      .then((data) => setPendingUsers(data.users))
+      .catch((error) => console.error("Error fetching pending users:", error));
+
+    // // Fetch approved users
+    // fetch("http://tourism.test/api/approvedusers")
+    //   .then((response) => response.json())
+    //   .then((data) => setApprovedUsers(data))
+    //   .catch((error) => console.error("Error fetching approved users:", error));
   }, []);
 
   const handleReviewClick = (place) => {
@@ -35,7 +53,7 @@ const AdminDashboard = () => {
 
   const updatePlaceStatus = async (id, status) => {
     try {
-      const response = await fetch(`http://tourism-backend.test/api/places/${id}/status`, {
+      const response = await fetch(`http://tourism.test/api/places/${id}/status`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -50,7 +68,7 @@ const AdminDashboard = () => {
       // Refresh data instead of reloading the page
       if (status === "Approved") {
         setPendingPlaces(pendingPlaces.filter(place => place.id !== id));
-        fetch("http://tourism-backend.test/api/approvedplaces")
+        fetch("http://tourism.test/api/approvedplaces")
           .then((response) => response.json())
           .then((data) => setApprovedPlaces(data));
       } else {
@@ -63,6 +81,27 @@ const AdminDashboard = () => {
 
   const handleSignOut = () => {
     localStorage.clear();
+  };
+
+  const updateUserStatus = async (id) => {
+    const status = userStatus[id];
+    const remarks = userRemarks[id] || "";
+    try {
+      const response = await fetch(`http://tourism.test/api/users/status-remarks/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status, remarks }),
+      });
+      if (!response.ok) throw new Error("Failed to update user status.");
+      setPendingUsers(pendingUsers.filter(user => user.id !== id));
+      setUserActionDropdown((prev) => ({ ...prev, [id]: false }));
+      setUserRemarks((prev) => ({ ...prev, [id]: "" }));
+      setUserStatus((prev) => ({ ...prev, [id]: "" }));
+    } catch (error) {
+      alert("Error updating user status: " + error.message);
+    }
   };
 
   const PlaceDetailsModal = ({ place, isOpen, onClose }) => {
@@ -117,7 +156,7 @@ const AdminDashboard = () => {
               </h3>
               <div className="border border-emerald-200 rounded-lg overflow-hidden shadow-md">
                 <img
-                  src={`http://tourism-backend.test/storage/${place.image_link}`}
+                  src={`http://tourism.test/storage/${place.image_link}`}
                   alt={place.name}
                   className="w-full h-auto"
                 />
@@ -222,7 +261,7 @@ const AdminDashboard = () => {
 
       try {
         setLoading(true);
-        const response = await fetch("http://tourism-backend.test/api/change-password", {
+        const response = await fetch("http://tourism.test/api/change-password", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -387,6 +426,80 @@ const AdminDashboard = () => {
     );
   };
 
+  const UserActionModal = ({ user, isOpen, onClose }) => {
+    if (!isOpen) return null;
+
+    const [localRemarks, setLocalRemarks] = useState(userRemarks[user.id] || "");
+    const [localStatus, setLocalStatus] = useState(userStatus[user.id] || "");
+
+    const handleSubmit = () => {
+      setUserRemarks(prev => ({ ...prev, [user.id]: localRemarks }));
+      setUserStatus(prev => ({ ...prev, [user.id]: localStatus }));
+      updateUserStatus(user.id);
+      onClose();
+    };
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div className="bg-white p-6 rounded-lg w-full max-w-md shadow-xl border border-emerald-200">
+          <div className="flex justify-between items-center mb-4 pb-2 border-b border-emerald-100">
+            <h2 className="text-xl font-semibold text-emerald-800">User Action</h2>
+            <button 
+              onClick={onClose}
+              className="rounded-full h-8 w-8 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-emerald-700 mb-1">Status</label>
+              <select
+                className="w-full border border-emerald-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                value={localStatus}
+                onChange={(e) => setLocalStatus(e.target.value)}
+              >
+                <option value="">Select</option>
+                <option value="Accepted">Accepted</option>
+                <option value="Rejected">Rejected</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-emerald-700 mb-1">Remarks</label>
+              <textarea
+                className="w-full border border-emerald-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                rows={3}
+                value={localRemarks}
+                onChange={(e) => setLocalRemarks(e.target.value)}
+              />
+            </div>
+          </div>
+          
+          <div className="mt-6 flex justify-end gap-3">
+            <button
+              className="px-4 py-2 bg-white border border-emerald-300 text-emerald-700 rounded-md hover:bg-emerald-50 transition-colors"
+              onClick={onClose}
+            >
+              Cancel
+            </button>
+            <button
+              className="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition-colors"
+              disabled={!localStatus}
+              onClick={handleSubmit}
+            >
+              Submit
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div
       className="min-h-screen relative bg-cover bg-center"
@@ -464,6 +577,21 @@ const AdminDashboard = () => {
                 onClick={() => setActiveTab("approved")}
               >
                 Approved Places
+              </button>
+              <button
+                className={`relative px-6 py-3 font-medium text-sm transition-colors ${
+                  activeTab === "users"
+                    ? "text-emerald-700 border-b-2 border-emerald-600"
+                    : "text-emerald-600 hover:text-emerald-800"
+                }`}
+                onClick={() => setActiveTab("users")}
+              >
+                {pendingUsers.length > 0 && (
+                  <span className="absolute top-1 right-2 bg-amber-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {pendingUsers.length}
+                  </span>
+                )}
+                Users
               </button>
             </div>
           </div>
@@ -579,6 +707,65 @@ const AdminDashboard = () => {
                 )}
               </div>
             )}
+            
+            {activeTab === "users" && (
+              <div className="overflow-x-auto">
+                {(pendingUsers.length === 0 && approvedUsers.length === 0) ? (
+                  <div className="text-center py-12">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-emerald-300 mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="8" x2="12" y2="12"></line>
+                      <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <h3 className="text-lg font-medium text-gray-700">No Pending Users</h3>
+                    <p className="text-gray-500 mt-1">All user registrations have been reviewed</p>
+                  </div>
+                ) : (
+                  <table className="w-full border-collapse">
+                    <thead>
+                      <tr className="bg-emerald-50">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-emerald-700 uppercase tracking-wider border-b border-emerald-200">#</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-emerald-700 uppercase tracking-wider border-b border-emerald-200">Full Name</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-emerald-700 uppercase tracking-wider border-b border-emerald-200">Email</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-emerald-700 uppercase tracking-wider border-b border-emerald-200">Status</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-emerald-700 uppercase tracking-wider border-b border-emerald-200">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-emerald-100">
+                      {pendingUsers.map((user, index) => (
+                        <tr key={user.id} className="hover:bg-emerald-50 transition-colors">
+                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{index + 1}</td>
+                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{user.name}</td>
+                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{user.email}</td>
+                          <td className="px-4 py-3 whitespace-nowrap text-sm text-yellow-600 font-semibold">Pending</td>
+                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
+                            <button
+                              className="px-3 py-1 bg-emerald-600 text-white rounded hover:bg-emerald-700 transition-colors text-xs font-medium"
+                              onClick={() => setSelectedUser(user)}
+                            >
+                              Action
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                      {approvedUsers.map((user, index) => (
+                        <tr key={user.id} className="hover:bg-emerald-50 transition-colors">
+                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{pendingUsers.length + index + 1}</td>
+                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{user.name}</td>
+                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{user.email}</td>
+                          <td className="px-4 py-3 whitespace-nowrap text-sm text-green-600 font-semibold">Approved</td>
+                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
+                            {user.remarks && (
+                              <span className="text-xs text-gray-500">Remarks: {user.remarks}</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            )}
           </div>
           
           {/* Footer */}
@@ -599,6 +786,11 @@ const AdminDashboard = () => {
         place={selectedPlace}
         isOpen={isModalOpen}
         onClose={handleCloseModal}
+      />
+      <UserActionModal
+        user={selectedUser}
+        isOpen={!!selectedUser}
+        onClose={() => setSelectedUser(null)}
       />
     </div>
   );

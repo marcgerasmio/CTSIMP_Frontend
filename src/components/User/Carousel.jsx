@@ -18,7 +18,7 @@ export default function Carousel() {
 
   const currentImage = images && images.length > 0 ? images.find((img) => img.id === currentImageId) : null
 
-  const imageSrc = currentImage?.src ? `http://tourism-backend.test/storage/${currentImage.src}` : ""
+  const imageSrc = currentImage?.src ? `http://tourism.test/storage/${currentImage.src}` : ""
 
   const handleNavigation = (direction) => {
     const currentIndex = images.findIndex((img) => img.id === currentImageId)
@@ -57,7 +57,7 @@ export default function Carousel() {
   }
 
   useEffect(() => {
-    fetch("http://tourism-backend.test/api/approvedplaces")
+    fetch("http://tourism.test/api/approvedplaces")
       .then((response) => response.json())
       .then((data) => {
         setImages(
@@ -71,6 +71,10 @@ export default function Carousel() {
             description: place.description,
             virtual_iframe: place.virtual_iframe,
             map_iframe: place.map_iframe,
+            entrance: place.entrance,
+            pricing: place.pricing,
+            history: place.history,
+            activities: place.activities,
           })),
         )
         // Simulate loading for animation effect
@@ -320,6 +324,30 @@ export default function Carousel() {
                 </svg>
                 Virtual Tour
               </button>
+              <button
+                onClick={() => toggleDropdown("details")}
+                className={`rounded-full px-5 py-2.5 text-sm font-medium transition-all duration-300 flex items-center shadow-md hover:shadow-lg hover:-translate-y-0.5 ${
+                  activeDropdown === "details"
+                    ? "bg-emerald-700 text-white"
+                    : "bg-white/90 text-emerald-900 hover:bg-white"
+                }`}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className={`h-4 w-4 mr-2 ${activeDropdown === "details" ? "animate-[pulse_1s_infinite]" : ""}`}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M12 20l9-8-9-8-9 8 9 8z"></path>
+                  <line x1="12" y1="12" x2="12" y2="20"></line>
+                  <line x1="12" y1="4" x2="12" y2="12"></line>
+                </svg>
+                View Details
+              </button>
             </div>
 
             {/* Dropdown content with animation */}
@@ -446,6 +474,33 @@ export default function Carousel() {
                     </div>
                   </div>
                 )}
+
+                {activeDropdown === "details" && (
+                  <div>
+                    <h3 className="font-semibold text-emerald-800 mb-3">Details</h3>
+                    <div className="bg-emerald-50 p-4 rounded-md animate-[fadeIn_0.6s_ease-out_0.2s]">
+                      <p className="mb-2">
+                        <span className="font-medium text-gray-700">Entrance Fee:</span> {currentImage?.entrance || "N/A"}
+                      </p>
+                      <p className="mb-2">
+                        <span className="font-medium text-gray-700">Pricing:</span> {currentImage?.pricing || "N/A"}
+                      </p>
+                      <p className="mb-2">
+                        <span className="font-medium text-gray-700">History:</span> {currentImage?.history || "N/A"}
+                      </p>
+                      <p className="mb-2">
+                        <span className="font-medium text-gray-700">Activities:</span>
+                      </p>
+                      <ul className="list-disc list-inside text-gray-700">
+                        {currentImage?.activities
+                          ? currentImage.activities.split(",").map((activity, index) => (
+                              <li key={index}>{activity.trim()}</li>
+                            ))
+                          : "N/A"}
+                      </ul>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -482,7 +537,7 @@ export default function Carousel() {
                   }}
                 >
                   <img
-                    src={`http://tourism-backend.test/storage/${image.src}`}
+                    src={`http://tourism.test/storage/${image.src}`}
                     alt={image.alt}
                     className={`object-cover w-full h-full transition-transform duration-700 ${
                       image.id === currentImageId ? "scale-110" : "scale-100 hover:scale-110"

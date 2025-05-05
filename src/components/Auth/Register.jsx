@@ -10,6 +10,8 @@ const Register = ({ onToggle }) => {
     email: "",
     password: "",
     confirmPassword: "",
+    location: "",
+    validId: null,
   })
   const [showPassword, setShowPassword] = useState(false)
   const [errors, setErrors] = useState({})
@@ -28,10 +30,10 @@ const Register = ({ onToggle }) => {
 
   // Handle input changes
   const handleChange = (e) => {
-    const { name, value } = e.target
+    const { name, value, type, files } = e.target
     setFormData({
       ...formData,
-      [name]: value,
+      [name]: type === "file" ? files[0] : value,
     })
 
     // Clear error when user types
@@ -82,6 +84,13 @@ const Register = ({ onToggle }) => {
       newErrors.confirmPassword = "Passwords do not match"
     }
 
+    if (!formData.location.trim()) {
+      newErrors.location = "Location is required"
+    }
+    if (!formData.validId) {
+      newErrors.validId = "Valid ID is required"
+    }
+
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -94,20 +103,18 @@ const Register = ({ onToggle }) => {
 
     setIsLoading(true)
 
-    // Prepare the registration data
-    const registrationData = {
-      name: formData.fullName,
-      email: formData.email,
-      password: formData.password,
-    }
+    // Prepare FormData for file upload
+    const registrationData = new FormData()
+    registrationData.append("name", formData.fullName)
+    registrationData.append("email", formData.email)
+    registrationData.append("password", formData.password)
+    registrationData.append("location", formData.location)
+    registrationData.append("valid_id", formData.validId)
 
     try {
-      const response = await fetch("http://tourism-backend.test/api/register", {
+      const response = await fetch("http://tourism.test/api/register", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(registrationData),
+        body: registrationData,
       })
 
       if (response.ok) {
@@ -516,6 +523,43 @@ const Register = ({ onToggle }) => {
           {errors.confirmPassword && (
             <p className="text-red-500 text-[10px] sm:text-xs mt-0.5 sm:mt-1">{errors.confirmPassword}</p>
           )}
+        </div>
+
+        <div
+          className={`space-y-1 transition-all duration-700 delay-600 ${animationLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
+        >
+          <label htmlFor="location" className="text-xs sm:text-sm font-medium text-emerald-700 block">
+            Location
+          </label>
+          <input
+            id="location"
+            name="location"
+            type="text"
+            value={formData.location}
+            onChange={handleChange}
+            className={`w-full px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm border ${
+              errors.location ? "border-red-500" : "border-emerald-300"
+            } bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300`}
+            placeholder="e.g. Butuan City, Agusan del Norte"
+          />
+          {errors.location && <p className="text-red-500 text-[10px] sm:text-xs mt-0.5 sm:mt-1">{errors.location}</p>}
+        </div>
+
+        <div
+          className={`space-y-1 transition-all duration-700 delay-700 ${animationLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
+        >
+          <label htmlFor="validId" className="text-xs sm:text-sm font-medium text-emerald-700 block">
+            Upload Valid ID <span className="text-red-500">*</span>
+          </label>
+          <input
+            id="validId"
+            name="validId"
+            type="file"
+            accept="image/*,application/pdf"
+            onChange={handleChange}
+            className="w-full text-xs sm:text-sm border border-emerald-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300"
+          />
+          {errors.validId && <p className="text-red-500 text-[10px] sm:text-xs mt-0.5 sm:mt-1">{errors.validId}</p>}
         </div>
 
         <button

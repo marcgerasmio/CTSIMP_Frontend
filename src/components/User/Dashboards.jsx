@@ -25,12 +25,17 @@ const Dashboard = () => {
     map_iframe: "",
     image_link: null,
     status: "Pending",
+    entrance: "",
+    history: "",
+    pricing: "",
+    activities: [],
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [activityInput, setActivityInput] = useState("")
 
   const fileInputRef = useRef(null)
 
-  // Set the name field from sessionStorage when the component mounts
+
   useEffect(() => {
     const storedName = sessionStorage.getItem("name")
     if (storedName) {
@@ -83,6 +88,24 @@ const Dashboard = () => {
     }, 5000)
   }
 
+  const handleActivityAdd = (e) => {
+    e.preventDefault();
+    if (activityInput.trim() !== "") {
+      setFormData((prevData) => ({
+        ...prevData,
+        activities: [...prevData.activities, activityInput.trim()],
+      }));
+      setActivityInput("");
+    }
+  };
+
+  const handleActivityRemove = (index) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      activities: prevData.activities.filter((_, i) => i !== index),
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setIsSubmitting(true)
@@ -91,11 +114,15 @@ const Dashboard = () => {
 
     // Append form data
     for (const key in formData) {
-      formDataToSubmit.append(key, formData[key])
+      if (key === "activities") {
+        formDataToSubmit.append(key, formData[key].join(", "));
+      } else {
+        formDataToSubmit.append(key, formData[key]);
+      }
     }
 
     try {
-      const response = await fetch("http://tourism-backend.test/api/places", {
+      const response = await fetch("http://tourism.test/api/places", {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -346,7 +373,38 @@ const Dashboard = () => {
                       />
                     </div>
                   </motion.div>
-                </motion.div>
+
+                    {/* Entrance */}
+                    <motion.div variants={itemVariants}>
+                      <label htmlFor="entrance" className="block text-sm font-medium text-emerald-700 mb-1">
+                        Entrance
+                      </label>
+                      <input
+                        id="entrance"
+                        type="text"
+                        placeholder="e.g, Main Gate"
+                        value={formData.entrance || ""}
+                        onChange={handleChange}
+                        name="entrance"
+                        className="w-full px-4 py-2 border border-emerald-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300"
+                      />
+                    </motion.div>
+              
+                    <motion.div variants={itemVariants}>
+                      <label htmlFor="pricing" className="block text-sm font-medium text-emerald-700 mb-1">
+                        Pricing
+                      </label>
+                      <input
+                        id="pricing"
+                        type="text"
+                        placeholder="e.g, 100 PHP per cottage/room"
+                        value={formData.pricing || ""}
+                        onChange={handleChange}
+                        name="pricing"
+                        className="w-full px-4 py-2 border border-emerald-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300"
+                      />
+                    </motion.div>
+                  </motion.div>
 
                 {/* Description */}
                 <motion.div variants={itemVariants}>
@@ -469,12 +527,63 @@ const Dashboard = () => {
                     />
                   </div>
                 </motion.div>
+
+                {/* Activities Section */}
+                <motion.div variants={itemVariants} className="mt-4">
+                  <label className="block text-sm font-medium text-emerald-700 mb-1">Activities</label>
+                  <div className="flex gap-2 mb-2">
+                    <input
+                      type="text"
+                      value={activityInput}
+                      onChange={(e) => setActivityInput(e.target.value)}
+                      placeholder="Add an activity"
+                      className="w-full px-4 py-2 border border-emerald-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                    />
+                    <button
+                      onClick={handleActivityAdd}
+                      className="px-3 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition-colors"
+                      type="button"
+                    >
+                      Add
+                    </button>
+                  </div>
+                  <ul className="list-disc pl-6">
+                    {formData.activities.map((activity, idx) => (
+                      <li key={idx} className="flex items-center gap-2 mb-1">
+                        <span>{activity}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleActivityRemove(idx)}
+                          className="text-red-500 hover:text-red-700 text-xs"
+                        >
+                          Remove
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
               </motion.div>
 
               {/* Image Preview */}
               <motion.div className="lg:col-span-1" variants={itemVariants}>
                 <FilePreview previewUrl={previewUrl} onFileChange={handleFileChange} fileInputRef={fileInputRef} />
               </motion.div>
+            </motion.div>
+
+            {/* History (outside the grid, below) */}
+            <motion.div variants={itemVariants} className="mt-4">
+              <label htmlFor="history" className="block text-sm font-medium text-emerald-700 mb-1">
+                History
+              </label>
+              <textarea
+                id="history"
+                placeholder="e.g, Established in 1900..."
+                value={formData.history || ""}
+                onChange={handleChange}
+                name="history"
+                className="w-full px-4 py-2 border border-emerald-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent min-h-[100px] transition-all duration-300"
+                rows={4}
+              />
             </motion.div>
 
             <motion.div className="mt-8 flex justify-end" variants={itemVariants}>
