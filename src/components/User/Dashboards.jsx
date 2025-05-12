@@ -1,19 +1,19 @@
-"use client"
+"use client";
 
-import { useState, useRef, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import Header from "./Header"
-import FilePreview from "./FilePreview"
-import Modal from "./Modal"
+import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import Header from "./Header";
+import FilePreview from "./FilePreview";
+import Modal from "./Modal";
 
 const Dashboard = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [previewUrl, setPreviewUrl] = useState(null)
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState(null);
   const [snackbar, setSnackbar] = useState({
     show: false,
     text: "",
     color: "",
-  })
+  });
   const [formData, setFormData] = useState({
     name: "", // This will be populated from sessionStorage
     place_name: "", // User will input this manually
@@ -29,64 +29,63 @@ const Dashboard = () => {
     history: "",
     pricing: "",
     activities: [],
-  })
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [activityInput, setActivityInput] = useState("")
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [activityInput, setActivityInput] = useState("");
 
-  const fileInputRef = useRef(null)
-
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
-    const storedName = sessionStorage.getItem("name")
+    const storedName = sessionStorage.getItem("name");
     if (storedName) {
       setFormData((prevData) => ({
         ...prevData,
         name: storedName,
-      }))
+      }));
     }
-  }, [])
+  }, []);
 
   const handleFileChange = (event) => {
-    const file = event.target.files?.[0]
+    const file = event.target.files?.[0];
     if (file) {
-      const reader = new FileReader()
+      const reader = new FileReader();
       reader.onloadend = () => {
-        setPreviewUrl(reader.result)
+        setPreviewUrl(reader.result);
         setFormData((prevData) => ({
           ...prevData,
           image_link: file, // Set the image file for upload
-        }))
-      }
-      reader.readAsDataURL(file)
+        }));
+      };
+      reader.readAsDataURL(file);
     } else {
-      setPreviewUrl(null)
+      setPreviewUrl(null);
       setFormData((prevData) => ({
         ...prevData,
         image_link: null,
-      }))
+      }));
     }
-  }
+  };
 
   const handleChange = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
-    }))
-  }
+    }));
+  };
 
   const showNotification = (text, color) => {
     setSnackbar({
       show: true,
       text,
       color,
-    })
+    });
 
     // Auto-hide after 5 seconds
     setTimeout(() => {
-      setSnackbar((prev) => ({ ...prev, show: false }))
-    }, 5000)
-  }
+      setSnackbar((prev) => ({ ...prev, show: false }));
+    }, 5000);
+  };
 
   const handleActivityAdd = (e) => {
     e.preventDefault();
@@ -107,10 +106,10 @@ const Dashboard = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+    e.preventDefault();
+    setIsSubmitting(true);
 
-    const formDataToSubmit = new FormData()
+    const formDataToSubmit = new FormData();
 
     // Append form data
     for (const key in formData) {
@@ -122,34 +121,34 @@ const Dashboard = () => {
     }
 
     try {
-      const response = await fetch("http://tourism.test/api/places", {
+      const response = await fetch("http://CTSIMP_Backend.test/api/places", {
         method: "POST",
         headers: {
           Accept: "application/json",
         },
         body: formDataToSubmit,
-      })
+      });
 
-      const data = await response.json()
+      const data = await response.json();
       if (response.ok) {
-        console.log("Place created:", data.place)
-        showNotification("Place created successfully", "success")
+        console.log("Place created:", data.place);
+        showNotification("Place created successfully", "success");
 
         // Delay the page refresh to allow time to see the notification
         setTimeout(() => {
-          window.location.reload()
-        }, 3000) // 3 second delay
+          window.location.reload();
+        }, 3000); // 3 second delay
       } else {
-        console.error("Error:", data.message)
-        showNotification(data.message || "Error creating place", "error")
+        console.error("Error:", data.message);
+        showNotification(data.message || "Error creating place", "error");
       }
     } catch (error) {
-      console.error("Error:", error)
-      showNotification("Error submitting form. Please try again.", "error")
+      console.error("Error:", error);
+      showNotification("Error submitting form. Please try again.", "error");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   // Animation variants
   const containerVariants = {
@@ -162,7 +161,7 @@ const Dashboard = () => {
         duration: 0.5,
       },
     },
-  }
+  };
 
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
@@ -171,7 +170,7 @@ const Dashboard = () => {
       opacity: 1,
       transition: { type: "spring", stiffness: 100 },
     },
-  }
+  };
 
   const formVariants = {
     hidden: { scale: 0.98, opacity: 0 },
@@ -180,10 +179,13 @@ const Dashboard = () => {
       opacity: 1,
       transition: { duration: 0.5 },
     },
-  }
+  };
 
   return (
-    <div className="min-h-screen relative bg-cover bg-center" style={{ backgroundImage: "url(bg.jpg)" }}>
+    <div
+      className="min-h-screen relative bg-cover bg-center"
+      style={{ backgroundImage: "url(bg.jpg)" }}
+    >
       <div className="absolute inset-0 bg-emerald-900 bg-opacity-80"></div>
       <motion.div
         className="relative z-10 container mx-auto px-4 py-8"
@@ -226,8 +228,12 @@ const Dashboard = () => {
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.6 }}
               >
-                <h1 className="text-2xl font-bold text-white">Caraga Tourism</h1>
-                <p className="text-emerald-100 text-sm">Submit a New Destination</p>
+                <h1 className="text-2xl font-bold text-white">
+                  Caraga Tourism
+                </h1>
+                <p className="text-emerald-100 text-sm">
+                  Submit a New Destination
+                </p>
               </motion.div>
             </div>
           </motion.div>
@@ -241,11 +247,20 @@ const Dashboard = () => {
               initial="hidden"
               animate="visible"
             >
-              <motion.div className="lg:col-span-2 space-y-6" variants={containerVariants}>
-                <motion.div className="grid grid-cols-1 sm:grid-cols-2 gap-4" variants={containerVariants}>
+              <motion.div
+                className="lg:col-span-2 space-y-6"
+                variants={containerVariants}
+              >
+                <motion.div
+                  className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                  variants={containerVariants}
+                >
                   {/* Place Name */}
                   <motion.div variants={itemVariants}>
-                    <label htmlFor="place_name" className="block text-sm font-medium text-emerald-700 mb-1">
+                    <label
+                      htmlFor="place_name"
+                      className="block text-sm font-medium text-emerald-700 mb-1"
+                    >
                       Place Name
                     </label>
                     <div className="relative">
@@ -278,7 +293,10 @@ const Dashboard = () => {
 
                   {/* Address */}
                   <motion.div variants={itemVariants}>
-                    <label htmlFor="address" className="block text-sm font-medium text-emerald-700 mb-1">
+                    <label
+                      htmlFor="address"
+                      className="block text-sm font-medium text-emerald-700 mb-1"
+                    >
                       Address
                     </label>
                     <div className="relative">
@@ -311,7 +329,10 @@ const Dashboard = () => {
 
                   {/* Email Address */}
                   <motion.div variants={itemVariants}>
-                    <label htmlFor="email" className="block text-sm font-medium text-emerald-700 mb-1">
+                    <label
+                      htmlFor="email"
+                      className="block text-sm font-medium text-emerald-700 mb-1"
+                    >
                       Email Address
                     </label>
                     <div className="relative">
@@ -344,7 +365,10 @@ const Dashboard = () => {
 
                   {/* Contact No */}
                   <motion.div variants={itemVariants}>
-                    <label htmlFor="contact" className="block text-sm font-medium text-emerald-700 mb-1">
+                    <label
+                      htmlFor="contact"
+                      className="block text-sm font-medium text-emerald-700 mb-1"
+                    >
                       Contact No.
                     </label>
                     <div className="relative">
@@ -374,41 +398,50 @@ const Dashboard = () => {
                     </div>
                   </motion.div>
 
-                    {/* Entrance */}
-                    <motion.div variants={itemVariants}>
-                      <label htmlFor="entrance" className="block text-sm font-medium text-emerald-700 mb-1">
-                        Entrance
-                      </label>
-                      <input
-                        id="entrance"
-                        type="text"
-                        placeholder="e.g, Main Gate"
-                        value={formData.entrance || ""}
-                        onChange={handleChange}
-                        name="entrance"
-                        className="w-full px-4 py-2 border border-emerald-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300"
-                      />
-                    </motion.div>
-              
-                    <motion.div variants={itemVariants}>
-                      <label htmlFor="pricing" className="block text-sm font-medium text-emerald-700 mb-1">
-                        Pricing
-                      </label>
-                      <input
-                        id="pricing"
-                        type="text"
-                        placeholder="e.g, 100 PHP per cottage/room"
-                        value={formData.pricing || ""}
-                        onChange={handleChange}
-                        name="pricing"
-                        className="w-full px-4 py-2 border border-emerald-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300"
-                      />
-                    </motion.div>
+                  {/* Entrance */}
+                  <motion.div variants={itemVariants}>
+                    <label
+                      htmlFor="entrance"
+                      className="block text-sm font-medium text-emerald-700 mb-1"
+                    >
+                      Entrance
+                    </label>
+                    <input
+                      id="entrance"
+                      type="text"
+                      placeholder="e.g, Main Gate"
+                      value={formData.entrance || ""}
+                      onChange={handleChange}
+                      name="entrance"
+                      className="w-full px-4 py-2 border border-emerald-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300"
+                    />
                   </motion.div>
+
+                  <motion.div variants={itemVariants}>
+                    <label
+                      htmlFor="pricing"
+                      className="block text-sm font-medium text-emerald-700 mb-1"
+                    >
+                      Pricing
+                    </label>
+                    <input
+                      id="pricing"
+                      type="text"
+                      placeholder="e.g, 100 PHP per cottage/room"
+                      value={formData.pricing || ""}
+                      onChange={handleChange}
+                      name="pricing"
+                      className="w-full px-4 py-2 border border-emerald-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300"
+                    />
+                  </motion.div>
+                </motion.div>
 
                 {/* Description */}
                 <motion.div variants={itemVariants}>
-                  <label htmlFor="description" className="block text-sm font-medium text-emerald-700 mb-1">
+                  <label
+                    htmlFor="description"
+                    className="block text-sm font-medium text-emerald-700 mb-1"
+                  >
                     Description
                   </label>
                   <div className="relative">
@@ -443,7 +476,10 @@ const Dashboard = () => {
 
                 {/* Google Map iframe */}
                 <motion.div variants={itemVariants}>
-                  <label htmlFor="googleMap" className="block text-sm font-medium text-emerald-700 mb-1">
+                  <label
+                    htmlFor="googleMap"
+                    className="block text-sm font-medium text-emerald-700 mb-1"
+                  >
                     Google Map iframe
                     <span className="ml-5">
                       <a
@@ -487,7 +523,10 @@ const Dashboard = () => {
 
                 {/* Visual Tour iframe */}
                 <motion.div variants={itemVariants}>
-                  <label htmlFor="visualTour" className="block text-sm font-medium text-emerald-700 mb-1">
+                  <label
+                    htmlFor="visualTour"
+                    className="block text-sm font-medium text-emerald-700 mb-1"
+                  >
                     Visual Tour iframe
                     <span className="ml-5">
                       <a
@@ -530,7 +569,9 @@ const Dashboard = () => {
 
                 {/* Activities Section */}
                 <motion.div variants={itemVariants} className="mt-4">
-                  <label className="block text-sm font-medium text-emerald-700 mb-1">Activities</label>
+                  <label className="block text-sm font-medium text-emerald-700 mb-1">
+                    Activities
+                  </label>
                   <div className="flex gap-2 mb-2">
                     <input
                       type="text"
@@ -566,13 +607,20 @@ const Dashboard = () => {
 
               {/* Image Preview */}
               <motion.div className="lg:col-span-1" variants={itemVariants}>
-                <FilePreview previewUrl={previewUrl} onFileChange={handleFileChange} fileInputRef={fileInputRef} />
+                <FilePreview
+                  previewUrl={previewUrl}
+                  onFileChange={handleFileChange}
+                  fileInputRef={fileInputRef}
+                />
               </motion.div>
             </motion.div>
 
             {/* History (outside the grid, below) */}
             <motion.div variants={itemVariants} className="mt-4">
-              <label htmlFor="history" className="block text-sm font-medium text-emerald-700 mb-1">
+              <label
+                htmlFor="history"
+                className="block text-sm font-medium text-emerald-700 mb-1"
+              >
                 History
               </label>
               <textarea
@@ -586,7 +634,10 @@ const Dashboard = () => {
               />
             </motion.div>
 
-            <motion.div className="mt-8 flex justify-end" variants={itemVariants}>
+            <motion.div
+              className="mt-8 flex justify-end"
+              variants={itemVariants}
+            >
               <motion.button
                 type="submit"
                 className="px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-medium rounded-md transition duration-300 flex items-center justify-center shadow-md relative overflow-hidden"
@@ -644,13 +695,19 @@ const Dashboard = () => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8, duration: 0.5 }}
           >
-            <p className="text-xs text-emerald-700">Department of Tourism - Caraga Region</p>
-            <p className="text-xs text-emerald-600 mt-1">Discover the beauty and culture of Caraga</p>
+            <p className="text-xs text-emerald-700">
+              Department of Tourism - Caraga Region
+            </p>
+            <p className="text-xs text-emerald-600 mt-1">
+              Discover the beauty and culture of Caraga
+            </p>
           </motion.div>
         </motion.form>
       </motion.div>
 
-      <AnimatePresence>{isModalOpen && <Modal onClose={() => setIsModalOpen(false)} />}</AnimatePresence>
+      <AnimatePresence>
+        {isModalOpen && <Modal onClose={() => setIsModalOpen(false)} />}
+      </AnimatePresence>
 
       {/* Notification Snackbar */}
       <AnimatePresence>
@@ -661,7 +718,9 @@ const Dashboard = () => {
             exit={{ x: 300, opacity: 0 }}
             transition={{ type: "spring", stiffness: 200, damping: 20 }}
             className={`fixed bottom-4 right-4 z-50 px-6 py-3 rounded-md shadow-lg flex items-center ${
-              snackbar.color === "success" ? "bg-emerald-600 text-white" : "bg-red-600 text-white"
+              snackbar.color === "success"
+                ? "bg-emerald-600 text-white"
+                : "bg-red-600 text-white"
             }`}
           >
             <span className="mr-2">
@@ -725,8 +784,7 @@ const Dashboard = () => {
         )}
       </AnimatePresence>
     </div>
-  )
-}
+  );
+};
 
-export default Dashboard
-
+export default Dashboard;

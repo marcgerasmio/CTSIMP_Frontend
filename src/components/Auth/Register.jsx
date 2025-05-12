@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Register = ({ onToggle }) => {
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -12,156 +12,156 @@ const Register = ({ onToggle }) => {
     confirmPassword: "",
     location: "",
     validId: null,
-  })
-  const [showPassword, setShowPassword] = useState(false)
-  const [errors, setErrors] = useState({})
-  const [passwordStrength, setPasswordStrength] = useState(0)
-  const [registrationSuccess, setRegistrationSuccess] = useState(false)
-  const [animationLoaded, setAnimationLoaded] = useState(false)
-  const navigate = useNavigate()
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [passwordStrength, setPasswordStrength] = useState(0);
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
+  const [animationLoaded, setAnimationLoaded] = useState(false);
+  const navigate = useNavigate();
 
   // Trigger entrance animations after component mount
   useState(() => {
     const timer = setTimeout(() => {
-      setAnimationLoaded(true)
-    }, 100)
-    return () => clearTimeout(timer)
-  }, [])
+      setAnimationLoaded(true);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Handle input changes
   const handleChange = (e) => {
-    const { name, value, type, files } = e.target
+    const { name, value, type, files } = e.target;
     setFormData({
       ...formData,
       [name]: type === "file" ? files[0] : value,
-    })
+    });
 
     // Clear error when user types
     if (errors[name]) {
       setErrors({
         ...errors,
         [name]: "",
-      })
+      });
     }
 
     // Calculate password strength when password changes
     if (name === "password") {
-      calculatePasswordStrength(value)
+      calculatePasswordStrength(value);
     }
-  }
+  };
 
   // Calculate password strength
   const calculatePasswordStrength = (password) => {
-    let strength = 0
-    if (password.length >= 8) strength += 1
-    if (/[A-Z]/.test(password)) strength += 1
-    if (/[0-9]/.test(password)) strength += 1
-    if (/[^A-Za-z0-9]/.test(password)) strength += 1
-    setPasswordStrength(strength)
-  }
+    let strength = 0;
+    if (password.length >= 8) strength += 1;
+    if (/[A-Z]/.test(password)) strength += 1;
+    if (/[0-9]/.test(password)) strength += 1;
+    if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+    setPasswordStrength(strength);
+  };
 
   // Validate form
   const validateForm = () => {
-    const newErrors = {}
+    const newErrors = {};
 
     if (!formData.fullName.trim()) {
-      newErrors.fullName = "Full name is required"
+      newErrors.fullName = "Full name is required";
     }
 
     if (!formData.email.trim()) {
-      newErrors.email = "Email is required"
+      newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Email is invalid"
+      newErrors.email = "Email is invalid";
     }
 
     if (!formData.password) {
-      newErrors.password = "Password is required"
+      newErrors.password = "Password is required";
     } else if (formData.password.length < 8) {
-      newErrors.password = "Password must be at least 8 characters"
+      newErrors.password = "Password must be at least 8 characters";
     }
 
     if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match"
+      newErrors.confirmPassword = "Passwords do not match";
     }
 
     if (!formData.location.trim()) {
-      newErrors.location = "Location is required"
+      newErrors.location = "Location is required";
     }
     if (!formData.validId) {
-      newErrors.validId = "Valid ID is required"
+      newErrors.validId = "Valid ID is required";
     }
 
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   // Handle form submission
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    if (!validateForm()) return
+    if (!validateForm()) return;
 
-    setIsLoading(true)
+    setIsLoading(true);
 
     // Prepare FormData for file upload
-    const registrationData = new FormData()
-    registrationData.append("name", formData.fullName)
-    registrationData.append("email", formData.email)
-    registrationData.append("password", formData.password)
-    registrationData.append("location", formData.location)
-    registrationData.append("valid_id", formData.validId)
+    const registrationData = new FormData();
+    registrationData.append("name", formData.fullName);
+    registrationData.append("email", formData.email);
+    registrationData.append("password", formData.password);
+    registrationData.append("location", formData.location);
+    registrationData.append("valid_id", formData.validId);
 
     try {
-      const response = await fetch("http://tourism.test/api/register", {
+      const response = await fetch("http://CTSIMP_Backend.test/api/register", {
         method: "POST",
         body: registrationData,
-      })
+      });
 
       if (response.ok) {
-        const result = await response.json()
-        console.log("Registration successful:", result)
-        setIsLoading(false)
-        setRegistrationSuccess(true)
+        const result = await response.json();
+        console.log("Registration successful:", result);
+        setIsLoading(false);
+        setRegistrationSuccess(true);
 
         // Show success state for 3 seconds before toggling to login
         setTimeout(() => {
-          onToggle()
-        }, 3000)
+          onToggle();
+        }, 3000);
       } else {
-        const error = await response.json()
+        const error = await response.json();
         setErrors({
           ...errors,
           form: error.message || "Registration failed. Please try again.",
-        })
-        setIsLoading(false)
+        });
+        setIsLoading(false);
       }
     } catch (error) {
-      console.error("Error registering:", error)
+      console.error("Error registering:", error);
       setErrors({
         ...errors,
         form: "Network error. Please check your connection and try again.",
-      })
-      setIsLoading(false)
+      });
+      setIsLoading(false);
     }
-  }
+  };
 
   // Get strength color
   const getStrengthColor = () => {
-    if (passwordStrength === 0) return "bg-gray-200"
-    if (passwordStrength === 1) return "bg-red-500"
-    if (passwordStrength === 2) return "bg-yellow-500"
-    if (passwordStrength === 3) return "bg-emerald-500"
-    return "bg-green-600"
-  }
+    if (passwordStrength === 0) return "bg-gray-200";
+    if (passwordStrength === 1) return "bg-red-500";
+    if (passwordStrength === 2) return "bg-yellow-500";
+    if (passwordStrength === 3) return "bg-emerald-500";
+    return "bg-green-600";
+  };
 
   // Get strength text
   const getStrengthText = () => {
-    if (!formData.password) return ""
-    if (passwordStrength === 1) return "Weak"
-    if (passwordStrength === 2) return "Fair"
-    if (passwordStrength === 3) return "Good"
-    return "Strong"
-  }
+    if (!formData.password) return "";
+    if (passwordStrength === 1) return "Weak";
+    if (passwordStrength === 2) return "Fair";
+    if (passwordStrength === 3) return "Good";
+    return "Strong";
+  };
 
   return (
     <div className="relative w-full min-w-[280px] max-w-md mx-auto p-3 sm:p-6 md:p-8 rounded-lg bg-gradient-to-br from-emerald-50 to-teal-50 shadow-lg border border-emerald-200 overflow-hidden">
@@ -212,7 +212,13 @@ const Register = ({ onToggle }) => {
               fill="none"
               viewBox="0 0 24 24"
             >
-              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"></circle>
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="2"
+              ></circle>
             </svg>
             <svg
               className="relative h-16 w-16 text-emerald-600 animate-zoomIn"
@@ -226,11 +232,19 @@ const Register = ({ onToggle }) => {
               <polyline points="22 4 12 14.01 9 11.01"></polyline>
             </svg>
           </div>
-          <p className="text-emerald-800 font-medium text-lg animate-fadeIn">Registration Successful!</p>
-          <p className="text-emerald-600 text-sm animate-fadeInUp" style={{ animationDelay: "0.2s" }}>
+          <p className="text-emerald-800 font-medium text-lg animate-fadeIn">
+            Registration Successful!
+          </p>
+          <p
+            className="text-emerald-600 text-sm animate-fadeInUp"
+            style={{ animationDelay: "0.2s" }}
+          >
             Welcome to Caraga Tourist Spots Interactive Map Portal!
           </p>
-          <p className="text-emerald-600 text-sm animate-fadeInUp" style={{ animationDelay: "0.4s" }}>
+          <p
+            className="text-emerald-600 text-sm animate-fadeInUp"
+            style={{ animationDelay: "0.4s" }}
+          >
             Redirecting you to login...
           </p>
 
@@ -253,7 +267,11 @@ const Register = ({ onToggle }) => {
       )}
 
       <div
-        className={`flex items-center justify-center mb-3 sm:mb-6 transition-all duration-700 ${animationLoaded ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"}`}
+        className={`flex items-center justify-center mb-3 sm:mb-6 transition-all duration-700 ${
+          animationLoaded
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 -translate-y-4"
+        }`}
       >
         {/* Improved Coconut Palm Tree Icon */}
         <svg
@@ -279,14 +297,24 @@ const Register = ({ onToggle }) => {
           <circle cx="14" cy="10" r="1" />
           <circle cx="12" cy="12" r="1" />
         </svg>
-        <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-center text-emerald-800">Explore Caraga Region</h1>
+        <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-center text-emerald-800">
+          Explore Caraga Region
+        </h1>
       </div>
 
       <div
-        className={`text-center mb-3 sm:mb-6 transition-all duration-700 delay-100 ${animationLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
+        className={`text-center mb-3 sm:mb-6 transition-all duration-700 delay-100 ${
+          animationLoaded
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 translate-y-4"
+        }`}
       >
-        <h2 className="text-base sm:text-lg md:text-xl font-semibold text-emerald-700">Create an Account</h2>
-        <p className="text-xs sm:text-sm text-emerald-600 mt-0.5 sm:mt-1">Join us to explore the beauty of Caraga</p>
+        <h2 className="text-base sm:text-lg md:text-xl font-semibold text-emerald-700">
+          Create an Account
+        </h2>
+        <p className="text-xs sm:text-sm text-emerald-600 mt-0.5 sm:mt-1">
+          Join us to explore the beauty of Caraga
+        </p>
       </div>
 
       {errors.form && (
@@ -310,11 +338,21 @@ const Register = ({ onToggle }) => {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4 md:space-y-5">
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-3 sm:space-y-4 md:space-y-5"
+      >
         <div
-          className={`space-y-1 transition-all duration-700 delay-200 ${animationLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
+          className={`space-y-1 transition-all duration-700 delay-200 ${
+            animationLoaded
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-4"
+          }`}
         >
-          <label htmlFor="fullName" className="text-xs sm:text-sm font-medium text-emerald-700 block">
+          <label
+            htmlFor="fullName"
+            className="text-xs sm:text-sm font-medium text-emerald-700 block"
+          >
             Full Name
           </label>
           <div className="relative group">
@@ -346,13 +384,24 @@ const Register = ({ onToggle }) => {
               placeholder="John Doe"
             />
           </div>
-          {errors.fullName && <p className="text-red-500 text-[10px] sm:text-xs mt-0.5 sm:mt-1">{errors.fullName}</p>}
+          {errors.fullName && (
+            <p className="text-red-500 text-[10px] sm:text-xs mt-0.5 sm:mt-1">
+              {errors.fullName}
+            </p>
+          )}
         </div>
 
         <div
-          className={`space-y-1 transition-all duration-700 delay-300 ${animationLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
+          className={`space-y-1 transition-all duration-700 delay-300 ${
+            animationLoaded
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-4"
+          }`}
         >
-          <label htmlFor="email" className="text-xs sm:text-sm font-medium text-emerald-700 block">
+          <label
+            htmlFor="email"
+            className="text-xs sm:text-sm font-medium text-emerald-700 block"
+          >
             Email Address
           </label>
           <div className="relative group">
@@ -384,13 +433,24 @@ const Register = ({ onToggle }) => {
               placeholder="example@email.com"
             />
           </div>
-          {errors.email && <p className="text-red-500 text-[10px] sm:text-xs mt-0.5 sm:mt-1">{errors.email}</p>}
+          {errors.email && (
+            <p className="text-red-500 text-[10px] sm:text-xs mt-0.5 sm:mt-1">
+              {errors.email}
+            </p>
+          )}
         </div>
 
         <div
-          className={`space-y-1 transition-all duration-700 delay-400 ${animationLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
+          className={`space-y-1 transition-all duration-700 delay-400 ${
+            animationLoaded
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-4"
+          }`}
         >
-          <label htmlFor="password" className="text-xs sm:text-sm font-medium text-emerald-700 block">
+          <label
+            htmlFor="password"
+            className="text-xs sm:text-sm font-medium text-emerald-700 block"
+          >
             Password
           </label>
           <div className="relative group">
@@ -459,15 +519,23 @@ const Register = ({ onToggle }) => {
               )}
             </button>
           </div>
-          {errors.password && <p className="text-red-500 text-[10px] sm:text-xs mt-0.5 sm:mt-1">{errors.password}</p>}
+          {errors.password && (
+            <p className="text-red-500 text-[10px] sm:text-xs mt-0.5 sm:mt-1">
+              {errors.password}
+            </p>
+          )}
 
           {formData.password && (
             <div className="mt-1 sm:mt-2 animate-fadeIn">
               <div className="flex items-center justify-between mb-0.5 sm:mb-1">
-                <div className="text-[10px] sm:text-xs text-emerald-700">Password strength:</div>
+                <div className="text-[10px] sm:text-xs text-emerald-700">
+                  Password strength:
+                </div>
                 <div
                   className="text-[10px] sm:text-xs font-medium"
-                  style={{ color: passwordStrength > 2 ? "#047857" : "#ca8a04" }}
+                  style={{
+                    color: passwordStrength > 2 ? "#047857" : "#ca8a04",
+                  }}
                 >
                   {getStrengthText()}
                 </div>
@@ -486,9 +554,16 @@ const Register = ({ onToggle }) => {
         </div>
 
         <div
-          className={`space-y-1 transition-all duration-700 delay-500 ${animationLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
+          className={`space-y-1 transition-all duration-700 delay-500 ${
+            animationLoaded
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-4"
+          }`}
         >
-          <label htmlFor="confirmPassword" className="text-xs sm:text-sm font-medium text-emerald-700 block">
+          <label
+            htmlFor="confirmPassword"
+            className="text-xs sm:text-sm font-medium text-emerald-700 block"
+          >
             Confirm Password
           </label>
           <div className="relative group">
@@ -521,14 +596,23 @@ const Register = ({ onToggle }) => {
             />
           </div>
           {errors.confirmPassword && (
-            <p className="text-red-500 text-[10px] sm:text-xs mt-0.5 sm:mt-1">{errors.confirmPassword}</p>
+            <p className="text-red-500 text-[10px] sm:text-xs mt-0.5 sm:mt-1">
+              {errors.confirmPassword}
+            </p>
           )}
         </div>
 
         <div
-          className={`space-y-1 transition-all duration-700 delay-600 ${animationLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
+          className={`space-y-1 transition-all duration-700 delay-600 ${
+            animationLoaded
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-4"
+          }`}
         >
-          <label htmlFor="location" className="text-xs sm:text-sm font-medium text-emerald-700 block">
+          <label
+            htmlFor="location"
+            className="text-xs sm:text-sm font-medium text-emerald-700 block"
+          >
             Location
           </label>
           <input
@@ -542,13 +626,24 @@ const Register = ({ onToggle }) => {
             } bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300`}
             placeholder="e.g. Butuan City, Agusan del Norte"
           />
-          {errors.location && <p className="text-red-500 text-[10px] sm:text-xs mt-0.5 sm:mt-1">{errors.location}</p>}
+          {errors.location && (
+            <p className="text-red-500 text-[10px] sm:text-xs mt-0.5 sm:mt-1">
+              {errors.location}
+            </p>
+          )}
         </div>
 
         <div
-          className={`space-y-1 transition-all duration-700 delay-700 ${animationLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
+          className={`space-y-1 transition-all duration-700 delay-700 ${
+            animationLoaded
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-4"
+          }`}
         >
-          <label htmlFor="validId" className="text-xs sm:text-sm font-medium text-emerald-700 block">
+          <label
+            htmlFor="validId"
+            className="text-xs sm:text-sm font-medium text-emerald-700 block"
+          >
             Upload Valid ID <span className="text-red-500">*</span>
           </label>
           <input
@@ -559,15 +654,25 @@ const Register = ({ onToggle }) => {
             onChange={handleChange}
             className="w-full text-xs sm:text-sm border border-emerald-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300"
           />
-          {errors.validId && <p className="text-red-500 text-[10px] sm:text-xs mt-0.5 sm:mt-1">{errors.validId}</p>}
+          {errors.validId && (
+            <p className="text-red-500 text-[10px] sm:text-xs mt-0.5 sm:mt-1">
+              {errors.validId}
+            </p>
+          )}
         </div>
 
         <button
           type="submit"
           disabled={isLoading || registrationSuccess}
           className={`w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-medium py-1.5 sm:py-2.5 px-3 sm:px-4 text-xs sm:text-sm md:text-base rounded-md transition-all duration-300 flex items-center justify-center shadow-md hover:shadow-lg hover:shadow-emerald-500/20 hover:-translate-y-0.5 active:translate-y-0 relative overflow-hidden group ${
-            animationLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-          } ${registrationSuccess || isLoading ? "opacity-70 cursor-not-allowed" : ""}`}
+            animationLoaded
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-4"
+          } ${
+            registrationSuccess || isLoading
+              ? "opacity-70 cursor-not-allowed"
+              : ""
+          }`}
           style={{ transitionDelay: "0.6s" }}
         >
           {/* Button background animation */}
@@ -582,7 +687,14 @@ const Register = ({ onToggle }) => {
                 fill="none"
                 viewBox="0 0 24 24"
               >
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
                 <path
                   className="opacity-75"
                   fill="currentColor"
@@ -615,7 +727,9 @@ const Register = ({ onToggle }) => {
       </form>
 
       <div
-        className={`relative flex items-center justify-center mt-4 mb-4 sm:mt-5 sm:mb-5 transition-all duration-700 ${animationLoaded ? "opacity-100" : "opacity-0"}`}
+        className={`relative flex items-center justify-center mt-4 mb-4 sm:mt-5 sm:mb-5 transition-all duration-700 ${
+          animationLoaded ? "opacity-100" : "opacity-0"
+        }`}
         style={{ transitionDelay: "0.7s" }}
       >
         <div className="absolute border-t border-emerald-200 w-full"></div>
@@ -625,15 +739,23 @@ const Register = ({ onToggle }) => {
       </div>
 
       <div
-        className={`text-center transition-all duration-700 ${animationLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
+        className={`text-center transition-all duration-700 ${
+          animationLoaded
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 translate-y-4"
+        }`}
         style={{ transitionDelay: "0.8s" }}
       >
-        <p className="text-xs sm:text-sm text-emerald-700">Already have an account?</p>
+        <p className="text-xs sm:text-sm text-emerald-700">
+          Already have an account?
+        </p>
         <button
           type="button"
           onClick={onToggle}
           disabled={registrationSuccess}
-          className={`mt-1 sm:mt-2 text-amber-600 hover:text-amber-700 font-medium text-xs sm:text-sm flex items-center justify-center mx-auto transition-colors duration-300 ${registrationSuccess ? "opacity-70 cursor-not-allowed" : ""}`}
+          className={`mt-1 sm:mt-2 text-amber-600 hover:text-amber-700 font-medium text-xs sm:text-sm flex items-center justify-center mx-auto transition-colors duration-300 ${
+            registrationSuccess ? "opacity-70 cursor-not-allowed" : ""
+          }`}
         >
           {/* MapPin Icon */}
           <svg
@@ -654,10 +776,16 @@ const Register = ({ onToggle }) => {
       </div>
 
       <div
-        className={`mt-4 pt-2 sm:mt-5 sm:pt-3 border-t border-emerald-200 text-center transition-all duration-700 ${animationLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
+        className={`mt-4 pt-2 sm:mt-5 sm:pt-3 border-t border-emerald-200 text-center transition-all duration-700 ${
+          animationLoaded
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 translate-y-4"
+        }`}
         style={{ transitionDelay: "0.9s" }}
       >
-        <p className="text-[10px] sm:text-xs text-emerald-700">Department of Tourism - Caraga Region</p>
+        <p className="text-[10px] sm:text-xs text-emerald-700">
+          Department of Tourism - Caraga Region
+        </p>
         <p
           className="text-[10px] sm:text-xs text-emerald-600 mt-0.5 sm:mt-1 animate-pulse"
           style={{ animationDuration: "3s" }}
@@ -747,8 +875,7 @@ const Register = ({ onToggle }) => {
         }}
       />
     </div>
-  )
-}
+  );
+};
 
-export default Register
-
+export default Register;

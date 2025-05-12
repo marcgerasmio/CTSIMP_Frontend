@@ -1,33 +1,35 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Modal = ({ onClose }) => {
   const [places, setPlaces] = useState([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedPlace, setSelectedPlace] = useState(null);
   const name = sessionStorage.getItem("name");
+  const [isRemarksModalOpen, setIsRemarksModalOpen] = useState(false);
+  const [selectedRemarks, setSelectedRemarks] = useState("");
 
   useEffect(() => {
     const fetchPlaces = async () => {
       try {
-        const response = await fetch("http://tourism.test/api/places")
+        const response = await fetch("http://CTSIMP_Backend.test/api/places");
         if (response.ok) {
-          const data = await response.json()
-          const filteredData = data.filter(item => item.name === name);
-          console.log(filteredData)
+          const data = await response.json();
+          const filteredData = data.filter((item) => item.name === name);
+          console.log(filteredData);
           setPlaces(filteredData);
         } else {
-          console.error("Failed to fetch places")
+          console.error("Failed to fetch places");
         }
       } catch (error) {
-        console.error("Error fetching places:", error)
+        console.error("Error fetching places:", error);
       }
-    }
+    };
 
-    fetchPlaces()
-  }, [])
+    fetchPlaces();
+  }, []);
 
   const handleEditClick = (place) => {
     setSelectedPlace(place);
@@ -39,55 +41,62 @@ const Modal = ({ onClose }) => {
     setSelectedPlace(null);
   };
 
+  const handleRemarksClick = (place) => {
+    setSelectedRemarks(place.remarks || "No remarks provided");
+    setIsRemarksModalOpen(true);
+  };
+
+  const handleRemarksModalClose = () => {
+    setIsRemarksModalOpen(false);
+    setSelectedRemarks("");
+  };
+
   const handleEditSubmit = async (updatedPlace) => {
-    const url = `http://tourism.test/api/places/${updatedPlace.id}`;
+    const url = `http://CTSIMP_Backend.test/api/places/${updatedPlace.id}`;
     const name = sessionStorage.getItem("name");
 
     if (!name) {
-        console.error("Name is required but is missing.");
-        return;
+      console.error("Name is required but is missing.");
+      return;
     }
 
     const payload = {
-        name,
-        place_name: updatedPlace.place_name || "",
-        address: updatedPlace.address || "",
-        email_address: updatedPlace.email_address || "",
-        contact_no: updatedPlace.contact_no || "",
-        description: updatedPlace.description || "",
-        virtual_iframe: updatedPlace.virtual_iframe || "",
-        map_iframe: updatedPlace.map_iframe || "",
-        status: updatedPlace.status || "Pending",
-        entrance: updatedPlace.entrance || "",
-        history: updatedPlace.history || "",
-        pricing: updatedPlace.pricing || "",
-        activities: updatedPlace.activities || "",
-        image_link: updatedPlace.image_link || "",
+      name,
+      place_name: updatedPlace.place_name || "",
+      address: updatedPlace.address || "",
+      email_address: updatedPlace.email_address || "",
+      contact_no: updatedPlace.contact_no || "",
+      description: updatedPlace.description || "",
+      virtual_iframe: updatedPlace.virtual_iframe || "",
+      map_iframe: updatedPlace.map_iframe || "",
+      status: "Pending",
+      entrance: updatedPlace.entrance || "",
+      history: updatedPlace.history || "",
+      pricing: updatedPlace.pricing || "",
+      activities: updatedPlace.activities || "",
+      image_link: updatedPlace.image_link || "",
     };
 
     try {
-        const response = await fetch(url, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload),
-        });
+      const response = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Failed with status ${response.status}: ${errorText}`);
-        }
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed with status ${response.status}: ${errorText}`);
+      }
 
-        const result = await response.json();
-        window.location.reload();
+      const result = await response.json();
+      window.location.reload();
     } catch (error) {
-        console.error("Update failed:", error.message);
+      console.error("Update failed:", error.message);
     }
-};
-  
-  
-  
+  };
 
   // Animation variants
   const backdropVariants = {
@@ -143,7 +152,9 @@ const Modal = ({ onClose }) => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.3 }}
           >
-            <h2 className="text-xl font-semibold text-white">Submitted Destinations</h2>
+            <h2 className="text-xl font-semibold text-white">
+              Submitted Destinations
+            </h2>
             <motion.button
               onClick={onClose}
               className="text-white hover:text-emerald-100 transition-colors duration-300"
@@ -196,12 +207,19 @@ const Modal = ({ onClose }) => {
                   </thead>
                   <tbody className="divide-y divide-emerald-100">
                     {places.map((place, index) => (
-                      <tr key={index} className="hover:bg-emerald-50 transition-colors duration-300">
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{place.name}</td>
+                      <tr
+                        key={index}
+                        className="hover:bg-emerald-50 transition-colors duration-300"
+                      >
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
+                          {place.name}
+                        </td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-emerald-700">
                           {place.place_name}
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{place.address}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
+                          {place.address}
+                        </td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm">
                           <span
                             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -216,12 +234,22 @@ const Modal = ({ onClose }) => {
                           </span>
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm">
-                          <button
-                            onClick={() => handleEditClick(place)}
-                            className="text-emerald-600 hover:text-emerald-800 transition-colors duration-300"
-                          >
-                            Edit
-                          </button>
+                          <div className="flex space-x-4">
+                            <button
+                              onClick={() => handleEditClick(place)}
+                              className="text-emerald-600 hover:text-emerald-800 transition-colors duration-300"
+                            >
+                              Edit
+                            </button>
+                            {place.status === "Rejected" && (
+                              <button
+                                onClick={() => handleRemarksClick(place)}
+                                className="text-red-600 hover:text-red-800 transition-colors duration-300"
+                              >
+                                View
+                              </button>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -241,6 +269,14 @@ const Modal = ({ onClose }) => {
             place={selectedPlace}
             onClose={handleEditModalClose}
             onSubmit={handleEditSubmit}
+          />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {isRemarksModalOpen && (
+          <RemarksModal
+            remarks={selectedRemarks}
+            onClose={handleRemarksModalClose}
           />
         )}
       </AnimatePresence>
@@ -320,7 +356,10 @@ const EditModal = ({ place, onClose, onSubmit }) => {
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="place_name" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="place_name"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Place Name
               </label>
               <input
@@ -333,7 +372,10 @@ const EditModal = ({ place, onClose, onSubmit }) => {
               />
             </div>
             <div>
-              <label htmlFor="address" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="address"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Address
               </label>
               <input
@@ -346,7 +388,10 @@ const EditModal = ({ place, onClose, onSubmit }) => {
               />
             </div>
             <div>
-              <label htmlFor="email_address" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="email_address"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Email Address
               </label>
               <input
@@ -359,7 +404,10 @@ const EditModal = ({ place, onClose, onSubmit }) => {
               />
             </div>
             <div>
-              <label htmlFor="contact_no" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="contact_no"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Contact Number
               </label>
               <input
@@ -372,7 +420,10 @@ const EditModal = ({ place, onClose, onSubmit }) => {
               />
             </div>
             <div className="md:col-span-2">
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="description"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Description
               </label>
               <textarea
@@ -385,7 +436,10 @@ const EditModal = ({ place, onClose, onSubmit }) => {
               ></textarea>
             </div>
             <div>
-              <label htmlFor="virtual_iframe" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="virtual_iframe"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Virtual Iframe
               </label>
               <input
@@ -398,7 +452,10 @@ const EditModal = ({ place, onClose, onSubmit }) => {
               />
             </div>
             <div>
-              <label htmlFor="map_iframe" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="map_iframe"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Map Iframe
               </label>
               <input
@@ -411,7 +468,10 @@ const EditModal = ({ place, onClose, onSubmit }) => {
               />
             </div>
             <div>
-              <label htmlFor="entrance" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="entrance"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Entrance Fee
               </label>
               <input
@@ -424,7 +484,10 @@ const EditModal = ({ place, onClose, onSubmit }) => {
               />
             </div>
             <div>
-              <label htmlFor="pricing" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="pricing"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Pricing
               </label>
               <input
@@ -437,7 +500,10 @@ const EditModal = ({ place, onClose, onSubmit }) => {
               />
             </div>
             <div className="md:col-span-2">
-              <label htmlFor="history" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="history"
+                className="block text-sm font-medium text-gray-700"
+              >
                 History
               </label>
               <textarea
@@ -452,7 +518,9 @@ const EditModal = ({ place, onClose, onSubmit }) => {
           </div>
 
           <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700">Activities</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Activities
+            </label>
             <div className="flex items-center gap-2 mt-2">
               <input
                 type="text"
@@ -501,6 +569,59 @@ const EditModal = ({ place, onClose, onSubmit }) => {
             </button>
           </div>
         </form>
+      </motion.div>
+    </motion.div>
+  );
+};
+
+const RemarksModal = ({ remarks, onClose }) => {
+  return (
+    <motion.div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      <motion.div
+        className="bg-white rounded-lg shadow-xl w-full max-w-md p-6"
+        initial={{ scale: 0.8 }}
+        animate={{ scale: 1 }}
+        exit={{ scale: 0.8 }}
+      >
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold text-red-600">
+            Rejection Remarks
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700 transition-colors"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <div className="bg-red-50 p-4 rounded-md border border-red-100">
+          <p className="text-gray-700">{remarks}</p>
+        </div>
+        <div className="mt-6 flex justify-end">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors"
+          >
+            Close
+          </button>
+        </div>
       </motion.div>
     </motion.div>
   );

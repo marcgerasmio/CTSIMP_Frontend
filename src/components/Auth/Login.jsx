@@ -1,160 +1,165 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { useNavigate, NavLink } from "react-router-dom"
+import { useState, useEffect } from "react";
+import { useNavigate, NavLink } from "react-router-dom";
 
-const ADMIN_EMAIL = "admin@sys.cs" // Replace with your actual admin email
-const COOKIE_NAME = "tourism_remembered_email"
+const ADMIN_EMAIL = "admin@sys.cs"; // Replace with your actual admin email
+const COOKIE_NAME = "tourism_remembered_email";
 
 // Helper functions for cookie management
 const setCookie = (name, value, days) => {
-  const expires = new Date()
-  expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000)
-  document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;SameSite=Strict`
-}
+  const expires = new Date();
+  expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+  document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;SameSite=Strict`;
+};
 
 const getCookie = (name) => {
-  const nameEQ = name + "="
-  const ca = document.cookie.split(";")
+  const nameEQ = name + "=";
+  const ca = document.cookie.split(";");
   for (let i = 0; i < ca.length; i++) {
-    let c = ca[i]
-    while (c.charAt(0) === " ") c = c.substring(1, c.length)
-    if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length)
+    let c = ca[i];
+    while (c.charAt(0) === " ") c = c.substring(1, c.length);
+    if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
   }
-  return null
-}
+  return null;
+};
 
 const eraseCookie = (name) => {
-  document.cookie = name + "=; Max-Age=-99999999; path=/"
-}
+  document.cookie = name + "=; Max-Age=-99999999; path=/";
+};
 
 const Login = ({ onToggle }) => {
-  const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     rememberMe: false,
-  })
-  const [error, setError] = useState("")
-  const [animationLoaded, setAnimationLoaded] = useState(false)
-  const [loginSuccess, setLoginSuccess] = useState(false)
+  });
+  const [error, setError] = useState("");
+  const [animationLoaded, setAnimationLoaded] = useState(false);
+  const [loginSuccess, setLoginSuccess] = useState(false);
   const [modal, setModal] = useState({ open: false, title: "", message: "" });
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   // Check for remembered email on component mount
   useEffect(() => {
-    const rememberedEmail = getCookie(COOKIE_NAME)
+    const rememberedEmail = getCookie(COOKIE_NAME);
     if (rememberedEmail) {
       setFormData((prev) => ({
         ...prev,
         email: rememberedEmail,
         rememberMe: true,
-      }))
+      }));
     }
 
     // Trigger entrance animations after a short delay
     const timer = setTimeout(() => {
-      setAnimationLoaded(true)
-    }, 100)
+      setAnimationLoaded(true);
+    }, 100);
 
-    return () => clearTimeout(timer)
-  }, [])
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target
+    const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
       [name]: type === "checkbox" ? checked : value,
-    })
+    });
     // Clear error when user types
-    if (error) setError("")
-  }
+    if (error) setError("");
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError("")
-    setLoginSuccess(false)
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+    setLoginSuccess(false);
 
     // Handle remember me functionality using cookies
     if (formData.rememberMe) {
-      setCookie(COOKIE_NAME, formData.email, 30) // Remember for 30 days
+      setCookie(COOKIE_NAME, formData.email, 30); // Remember for 30 days
     } else {
-      eraseCookie(COOKIE_NAME)
+      eraseCookie(COOKIE_NAME);
     }
 
     const loginData = {
       email: formData.email,
       password: formData.password,
       remember_me: formData.rememberMe,
-    }
+    };
 
     try {
-      const response = await fetch("http://tourism.test/api/login", {
+      const response = await fetch("http://CTSIMP_Backend.test/api/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(loginData),
-      })
+      });
 
-      const data = await response.json()
-      console.log("API Response:", data)
+      const data = await response.json();
+      console.log("API Response:", data);
 
       if (response.ok && data.token) {
         // Save JWT & user data to localStorage
-        localStorage.setItem("jwt", data.token)
-        localStorage.setItem("user", JSON.stringify(data.user))
-        sessionStorage.setItem("name", data.user.name)
+        localStorage.setItem("jwt", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        sessionStorage.setItem("name", data.user.name);
 
         // Check user status
         if (data.user.status === "Accepted") {
-          setIsLoading(false)
-          setLoginSuccess(true)
+          setIsLoading(false);
+          setLoginSuccess(true);
           setTimeout(() => {
             if (data.user.email === ADMIN_EMAIL) {
-              navigate("/admin")
+              navigate("/admin");
             } else {
-              navigate("/dashboard")
+              navigate("/dashboard");
             }
-          }, 3000)
+          }, 3000);
         } else if (data.user.status === "Pending") {
-          setIsLoading(false)
+          setIsLoading(false);
           setModal({
             open: true,
             title: "Account Verification",
-            message: "Account verification is still in progress. Please wait for admin approval.",
-          })
+            message:
+              "Account verification is still in progress. Please wait for admin approval.",
+          });
         } else if (data.user.status === "Rejected") {
-          setIsLoading(false)
+          setIsLoading(false);
           setModal({
             open: true,
             title: "Account Registration Rejected",
             message: data.user.remarks
               ? `Your registration was rejected. Remarks: ${data.user.remarks}`
               : "Your registration was rejected.",
-          })
+          });
         } else {
-          setIsLoading(false)
-          setError("Unknown account status. Please contact support.")
+          setIsLoading(false);
+          setError("Unknown account status. Please contact support.");
         }
       } else {
-        setError(data.message || "Invalid email or password. Please try again.")
-        setIsLoading(false)
+        setError(
+          data.message || "Invalid email or password. Please try again."
+        );
+        setIsLoading(false);
       }
     } catch (error) {
-      console.error("Login error:", error)
-      setError("Network error. Please check your connection and try again.")
-      setIsLoading(false)
+      console.error("Login error:", error);
+      setError("Network error. Please check your connection and try again.");
+      setIsLoading(false);
     }
-  }
+  };
 
-  const StatusModal = () => (
+  const StatusModal = () =>
     modal.open && (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
         <div className="bg-white rounded-lg shadow-lg p-6 max-w-xs w-full text-center border border-emerald-200">
-          <h2 className="text-lg font-semibold text-emerald-700 mb-2">{modal.title}</h2>
+          <h2 className="text-lg font-semibold text-emerald-700 mb-2">
+            {modal.title}
+          </h2>
           <p className="text-gray-700 mb-4">{modal.message}</p>
           <button
             className="px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700 transition"
@@ -164,8 +169,7 @@ const Login = ({ onToggle }) => {
           </button>
         </div>
       </div>
-    )
-  );
+    );
 
   return (
     <>
@@ -218,7 +222,13 @@ const Login = ({ onToggle }) => {
                 fill="none"
                 viewBox="0 0 24 24"
               >
-                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"></circle>
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                ></circle>
               </svg>
               <svg
                 className="relative h-16 w-16 text-emerald-600 animate-zoomIn"
@@ -228,11 +238,20 @@ const Login = ({ onToggle }) => {
                 stroke="currentColor"
                 strokeWidth="2"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M5 13l4 4L19 7"
+                />
               </svg>
             </div>
-            <p className="text-emerald-800 font-medium text-lg animate-fadeIn">Login Successful!</p>
-            <p className="text-emerald-600 text-sm animate-fadeInUp" style={{ animationDelay: "0.2s" }}>
+            <p className="text-emerald-800 font-medium text-lg animate-fadeIn">
+              Login Successful!
+            </p>
+            <p
+              className="text-emerald-600 text-sm animate-fadeInUp"
+              style={{ animationDelay: "0.2s" }}
+            >
               Preparing your journey...
             </p>
 
@@ -255,7 +274,11 @@ const Login = ({ onToggle }) => {
         )}
 
         <div
-          className={`flex items-center justify-between mb-3 sm:mb-6 transition-all duration-700 ${animationLoaded ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"}`}
+          className={`flex items-center justify-between mb-3 sm:mb-6 transition-all duration-700 ${
+            animationLoaded
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 -translate-y-4"
+          }`}
         >
           <NavLink
             to="/"
@@ -301,9 +324,15 @@ const Login = ({ onToggle }) => {
         </div>
 
         <div
-          className={`text-center mb-3 sm:mb-6 transition-all duration-700 delay-100 ${animationLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
+          className={`text-center mb-3 sm:mb-6 transition-all duration-700 delay-100 ${
+            animationLoaded
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-4"
+          }`}
         >
-          <h2 className="text-base sm:text-lg md:text-xl font-semibold text-emerald-700">Sign In</h2>
+          <h2 className="text-base sm:text-lg md:text-xl font-semibold text-emerald-700">
+            Sign In
+          </h2>
           <p
             className="text-xs sm:text-sm text-emerald-600 mt-0.5 sm:mt-1 animate-fadeIn"
             style={{ animationDelay: "0.5s" }}
@@ -333,11 +362,21 @@ const Login = ({ onToggle }) => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4 md:space-y-5">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-3 sm:space-y-4 md:space-y-5"
+        >
           <div
-            className={`space-y-1 transition-all duration-700 delay-200 ${animationLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
+            className={`space-y-1 transition-all duration-700 delay-200 ${
+              animationLoaded
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-4"
+            }`}
           >
-            <label htmlFor="email" className="text-xs sm:text-sm font-medium text-emerald-700 block">
+            <label
+              htmlFor="email"
+              className="text-xs sm:text-sm font-medium text-emerald-700 block"
+            >
               Email Address
             </label>
             <div className="relative group">
@@ -371,9 +410,16 @@ const Login = ({ onToggle }) => {
           </div>
 
           <div
-            className={`space-y-1 transition-all duration-700 delay-300 ${animationLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
+            className={`space-y-1 transition-all duration-700 delay-300 ${
+              animationLoaded
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-4"
+            }`}
           >
-            <label htmlFor="password" className="text-xs sm:text-sm font-medium text-emerald-700 block">
+            <label
+              htmlFor="password"
+              className="text-xs sm:text-sm font-medium text-emerald-700 block"
+            >
               Password
             </label>
             <div className="relative group">
@@ -389,7 +435,14 @@ const Login = ({ onToggle }) => {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <rect
+                    x="3"
+                    y="11"
+                    width="18"
+                    height="11"
+                    rx="2"
+                    ry="2"
+                  ></rect>
                   <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                 </svg>
               </div>
@@ -444,7 +497,11 @@ const Login = ({ onToggle }) => {
           </div>
 
           <div
-            className={`flex items-center justify-between transition-all duration-700 delay-400 ${animationLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
+            className={`flex items-center justify-between transition-all duration-700 delay-400 ${
+              animationLoaded
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-4"
+            }`}
           >
             <label className="flex items-center text-xs sm:text-sm text-emerald-700 group cursor-pointer">
               <input
@@ -454,7 +511,9 @@ const Login = ({ onToggle }) => {
                 onChange={handleChange}
                 className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500 transition-all duration-300 group-hover:border-emerald-500"
               />
-              <span className="group-hover:text-emerald-800 transition-colors duration-300">Remember Me</span>
+              <span className="group-hover:text-emerald-800 transition-colors duration-300">
+                Remember Me
+              </span>
             </label>
           </div>
 
@@ -462,8 +521,12 @@ const Login = ({ onToggle }) => {
             type="submit"
             disabled={isLoading || loginSuccess}
             className={`w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-medium py-1.5 sm:py-2.5 px-3 sm:px-4 text-xs sm:text-sm md:text-base rounded-md transition-all duration-300 flex items-center justify-center shadow-md hover:shadow-lg hover:shadow-emerald-500/20 hover:-translate-y-0.5 active:translate-y-0 relative overflow-hidden group ${
-              animationLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-            } ${loginSuccess || isLoading ? "opacity-70 cursor-not-allowed" : ""}`}
+              animationLoaded
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-4"
+            } ${
+              loginSuccess || isLoading ? "opacity-70 cursor-not-allowed" : ""
+            }`}
             style={{ transitionDelay: "0.5s" }}
           >
             {/* Button background animation */}
@@ -478,7 +541,14 @@ const Login = ({ onToggle }) => {
                   fill="none"
                   viewBox="0 0 24 24"
                 >
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
                   <path
                     className="opacity-75"
                     fill="currentColor"
@@ -511,7 +581,9 @@ const Login = ({ onToggle }) => {
         </form>
 
         <div
-          className={`relative flex items-center justify-center mt-4 mb-4 sm:mt-5 sm:mb-5 transition-all duration-700 ${animationLoaded ? "opacity-100" : "opacity-0"}`}
+          className={`relative flex items-center justify-center mt-4 mb-4 sm:mt-5 sm:mb-5 transition-all duration-700 ${
+            animationLoaded ? "opacity-100" : "opacity-0"
+          }`}
           style={{ transitionDelay: "0.6s" }}
         >
           <div className="absolute border-t border-emerald-200 w-full"></div>
@@ -525,7 +597,9 @@ const Login = ({ onToggle }) => {
           onClick={onToggle}
           disabled={loginSuccess}
           className={`w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-medium py-1.5 sm:py-2.5 px-3 sm:px-4 text-xs sm:text-sm md:text-base rounded-md transition-all duration-300 flex items-center justify-center shadow-md hover:shadow-lg hover:shadow-amber-500/20 hover:-translate-y-0.5 active:translate-y-0 relative overflow-hidden group ${
-            animationLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+            animationLoaded
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-4"
           } ${loginSuccess ? "opacity-70 cursor-not-allowed" : ""}`}
           style={{ transitionDelay: "0.7s" }}
         >
@@ -552,10 +626,16 @@ const Login = ({ onToggle }) => {
         </button>
 
         <div
-          className={`mt-4 pt-2 sm:mt-5 sm:pt-3 border-t border-emerald-200 text-center transition-all duration-700 ${animationLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
+          className={`mt-4 pt-2 sm:mt-5 sm:pt-3 border-t border-emerald-200 text-center transition-all duration-700 ${
+            animationLoaded
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-4"
+          }`}
           style={{ transitionDelay: "0.8s" }}
         >
-          <p className="text-[10px] sm:text-xs text-emerald-700">Department of Tourism - Caraga Region</p>
+          <p className="text-[10px] sm:text-xs text-emerald-700">
+            Department of Tourism - Caraga Region
+          </p>
           <p
             className="text-[10px] sm:text-xs text-emerald-600 mt-0.5 sm:mt-1 animate-pulse"
             style={{ animationDuration: "3s" }}
@@ -646,8 +726,7 @@ const Login = ({ onToggle }) => {
         />
       </div>
     </>
-  )
-}
+  );
+};
 
-export default Login
-
+export default Login;

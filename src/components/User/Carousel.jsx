@@ -1,63 +1,107 @@
-"use client"
+"use client";
 
-import { useState, useRef, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
+import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
+const Modal = ({ isOpen, onClose, title, children }) => {
+  if (!isOpen) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center animate-[fadeIn_0.3s_ease-out]">
+      <div
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        onClick={onClose}
+      ></div>
+      <div className="relative z-10 bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-auto animate-[fadeInUp_0.4s_ease-out]">
+        <div className="flex items-center justify-between border-b p-4">
+          <h3 className="font-semibold text-emerald-800">{title}</h3>
+          <button
+            onClick={onClose}
+            className="p-1 rounded-full hover:bg-gray-100 transition-colors"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 text-gray-500"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <div className="p-6">{children}</div>
+      </div>
+    </div>
+  );
+};
 
 export default function Carousel() {
-  const navigate = useNavigate()
-  const [currentImageId, setCurrentImageId] = useState(null)
-  const [translateX, setTranslateX] = useState(0)
-  const [imagesLoaded, setImagesLoaded] = useState(false)
-  const [activeDropdown, setActiveDropdown] = useState(null)
-  const [images, setImages] = useState([])
-  const carouselRef = useRef(null)
+  const navigate = useNavigate();
+  const [currentImageId, setCurrentImageId] = useState(null);
+  const [translateX, setTranslateX] = useState(0);
+  const [imagesLoaded, setImagesLoaded] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState(null);
+  const [activeModal, setActiveModal] = useState(null);
+  const [images, setImages] = useState([]);
+  const carouselRef = useRef(null);
   // Animation states
-  const [isImageChanging, setIsImageChanging] = useState(false)
-  const [animationDirection, setAnimationDirection] = useState(null)
-  const [showLoadingAnimation, setShowLoadingAnimation] = useState(true)
+  const [isImageChanging, setIsImageChanging] = useState(false);
+  const [animationDirection, setAnimationDirection] = useState(null);
+  const [showLoadingAnimation, setShowLoadingAnimation] = useState(true);
 
-  const currentImage = images && images.length > 0 ? images.find((img) => img.id === currentImageId) : null
+  const currentImage =
+    images && images.length > 0
+      ? images.find((img) => img.id === currentImageId)
+      : null;
 
-  const imageSrc = currentImage?.src ? `http://tourism.test/storage/${currentImage.src}` : ""
+  const imageSrc = currentImage?.src
+    ? `http://CTSIMP_Backend.test/storage/${currentImage.src}`
+    : "";
 
   const handleNavigation = (direction) => {
-    const currentIndex = images.findIndex((img) => img.id === currentImageId)
-    let newIndex
+    const currentIndex = images.findIndex((img) => img.id === currentImageId);
+    let newIndex;
 
     if (direction === "next") {
-      newIndex = (currentIndex + 1) % images.length
-      setAnimationDirection("right")
+      newIndex = (currentIndex + 1) % images.length;
+      setAnimationDirection("right");
     } else {
-      newIndex = (currentIndex - 1 + images.length) % images.length
-      setAnimationDirection("left")
+      newIndex = (currentIndex - 1 + images.length) % images.length;
+      setAnimationDirection("left");
     }
 
-    setIsImageChanging(true)
+    setIsImageChanging(true);
 
     // Short delay to allow exit animation to complete
     setTimeout(() => {
-      setCurrentImageId(images[newIndex].id)
+      setCurrentImageId(images[newIndex].id);
       setTimeout(() => {
-        setIsImageChanging(false)
-      }, 50)
-    }, 300)
-  }
+        setIsImageChanging(false);
+      }, 50);
+    }, 300);
+  };
 
   const updateCarouselPosition = () => {
     if (carouselRef.current) {
-      const currentIndex = images.findIndex((img) => img.id === currentImageId)
-      const itemWidth = 192 + 16
-      const newTranslateX = -currentIndex * itemWidth
-      setTranslateX(newTranslateX)
+      const currentIndex = images.findIndex((img) => img.id === currentImageId);
+      const itemWidth = 192 + 16;
+      const newTranslateX = -currentIndex * itemWidth;
+      setTranslateX(newTranslateX);
     }
-  }
+  };
 
   const toggleDropdown = (dropdown) => {
-    setActiveDropdown(activeDropdown === dropdown ? null : dropdown)
-  }
+    setActiveDropdown(activeDropdown === dropdown ? null : dropdown);
+  };
+
+  const toggleModal = (modal) => {
+    setActiveModal(activeModal === modal ? null : modal);
+  };
 
   useEffect(() => {
-    fetch("http://tourism.test/api/approvedplaces")
+    fetch("http://CTSIMP_Backend.test/api/approvedplaces")
       .then((response) => response.json())
       .then((data) => {
         setImages(
@@ -75,49 +119,49 @@ export default function Carousel() {
             pricing: place.pricing,
             history: place.history,
             activities: place.activities,
-          })),
-        )
+          }))
+        );
         // Simulate loading for animation effect
         setTimeout(() => {
-          setImagesLoaded(true)
+          setImagesLoaded(true);
           setTimeout(() => {
-            setShowLoadingAnimation(false)
-          }, 600)
-        }, 1000)
+            setShowLoadingAnimation(false);
+          }, 600);
+        }, 1000);
       })
-      .catch((error) => console.error("Error fetching places:", error))
-  }, [])
+      .catch((error) => console.error("Error fetching places:", error));
+  }, []);
 
   useEffect(() => {
     if (images.length > 0) {
-      setCurrentImageId(images[0].id)
-      updateCarouselPosition()
+      setCurrentImageId(images[0].id);
+      updateCarouselPosition();
     }
-  }, [images])
+  }, [images]);
 
   useEffect(() => {
-    updateCarouselPosition()
-  }, [currentImageId])
+    updateCarouselPosition();
+  }, [currentImageId]);
 
   useEffect(() => {
     const handleResize = () => {
-      updateCarouselPosition()
-    }
+      updateCarouselPosition();
+    };
 
-    window.addEventListener("resize", handleResize)
-    return () => window.removeEventListener("resize", handleResize)
-  }, [])
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // CSS for animations
-  const fadeInAnimation = "animate-[fadeIn_0.8s_ease-in-out]"
-  const fadeOutAnimation = "animate-[fadeOut_0.3s_ease-in-out]"
-  const slideInRightAnimation = "animate-[slideInRight_0.5s_ease-out]"
-  const slideInLeftAnimation = "animate-[slideInLeft_0.5s_ease-out]"
-  const slideOutRightAnimation = "animate-[slideOutRight_0.3s_ease-in]"
-  const slideOutLeftAnimation = "animate-[slideOutLeft_0.3s_ease-in]"
-  const pulseAnimation = "animate-[pulse_2s_infinite]"
-  const bounceAnimation = "animate-[bounce_1s_ease-in-out]"
-  const floatAnimation = "animate-[float_3s_ease-in-out_infinite]"
+  const fadeInAnimation = "animate-[fadeIn_0.8s_ease-in-out]";
+  const fadeOutAnimation = "animate-[fadeOut_0.3s_ease-in-out]";
+  const slideInRightAnimation = "animate-[slideInRight_0.5s_ease-out]";
+  const slideInLeftAnimation = "animate-[slideInLeft_0.5s_ease-out]";
+  const slideOutRightAnimation = "animate-[slideOutRight_0.3s_ease-in]";
+  const slideOutLeftAnimation = "animate-[slideOutLeft_0.3s_ease-in]";
+  const pulseAnimation = "animate-[pulse_2s_infinite]";
+  const bounceAnimation = "animate-[bounce_1s_ease-in-out]";
+  const floatAnimation = "animate-[float_3s_ease-in-out_infinite]";
 
   if (!imagesLoaded || images.length === 0) {
     return (
@@ -130,7 +174,14 @@ export default function Carousel() {
               fill="none"
               viewBox="0 0 24 24"
             >
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
               <path
                 className="opacity-75"
                 fill="currentColor"
@@ -152,8 +203,12 @@ export default function Carousel() {
               />
             </svg>
           </div>
-          <div className={`text-2xl font-semibold text-emerald-800 ${bounceAnimation}`}>
-            {images.length === 0 ? "No Tourism Places Available" : "Discovering Mindanao's Treasures"}
+          <div
+            className={`text-2xl font-semibold text-emerald-800 ${bounceAnimation}`}
+          >
+            {images.length === 0
+              ? "No Tourism Places Available"
+              : "Discovering Mindanao's Treasures"}
           </div>
           <p className={`text-emerald-600 mt-2 ${floatAnimation}`}>
             {images.length === 0
@@ -167,11 +222,15 @@ export default function Carousel() {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
-    <div className={`relative min-h-screen w-full overflow-hidden ${showLoadingAnimation ? fadeInAnimation : ""}`}>
+    <div
+      className={`relative min-h-screen w-full overflow-hidden ${
+        showLoadingAnimation ? fadeInAnimation : ""
+      }`}
+    >
       {/* Main background image with transition effect */}
       {currentImage && (
         <div className="absolute inset-0 z-0 overflow-hidden">
@@ -184,8 +243,8 @@ export default function Carousel() {
               animationDirection === "right" && !isImageChanging
                 ? "animate-[zoomInRight_0.7s_ease-out]"
                 : animationDirection === "left" && !isImageChanging
-                  ? "animate-[zoomInLeft_0.7s_ease-out]"
-                  : ""
+                ? "animate-[zoomInLeft_0.7s_ease-out]"
+                : ""
             }`}
             style={{ filter: "brightness(1.05) contrast(1.05)" }}
           />
@@ -226,7 +285,9 @@ export default function Carousel() {
       </button>
 
       {/* Main content with entrance animation */}
-      <div className={`relative z-20 flex min-h-screen flex-col ${fadeInAnimation}`}>
+      <div
+        className={`relative z-20 flex min-h-screen flex-col ${fadeInAnimation}`}
+      >
         <div className="flex-1 flex items-center p-6 md:p-12">
           <div
             className={`max-w-2xl backdrop-blur-sm p-8 rounded-lg shadow-xl transition-all duration-500 ${
@@ -235,10 +296,10 @@ export default function Carousel() {
                   ? slideOutLeftAnimation
                   : slideOutRightAnimation
                 : animationDirection === "right"
-                  ? slideInRightAnimation
-                  : animationDirection === "left"
-                    ? slideInLeftAnimation
-                    : fadeInAnimation
+                ? slideInRightAnimation
+                : animationDirection === "left"
+                ? slideInLeftAnimation
+                : fadeInAnimation
             }`}
           >
             {/* Content with text shadow for readability without obscuring background */}
@@ -258,7 +319,7 @@ export default function Carousel() {
 
             <div className="flex flex-wrap gap-3">
               <button
-                onClick={() => toggleDropdown("contact")}
+                onClick={() => toggleModal("contact")}
                 className={`rounded-full px-5 py-2.5 text-sm font-medium transition-all duration-300 flex items-center shadow-md hover:shadow-lg hover:-translate-y-0.5 ${
                   activeDropdown === "contact"
                     ? "bg-emerald-700 text-white"
@@ -267,7 +328,11 @@ export default function Carousel() {
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className={`h-4 w-4 mr-2 ${activeDropdown === "contact" ? "animate-[pulse_1s_infinite]" : ""}`}
+                  className={`h-4 w-4 mr-2 ${
+                    activeDropdown === "contact"
+                      ? "animate-[pulse_1s_infinite]"
+                      : ""
+                  }`}
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -280,14 +345,20 @@ export default function Carousel() {
                 Contact
               </button>
               <button
-                onClick={() => toggleDropdown("map")}
+                onClick={() => toggleModal("map")}
                 className={`rounded-full px-5 py-2.5 text-sm font-medium transition-all duration-300 flex items-center shadow-md hover:shadow-lg hover:-translate-y-0.5 ${
-                  activeDropdown === "map" ? "bg-emerald-700 text-white" : "bg-white/90 text-emerald-900 hover:bg-white"
+                  activeDropdown === "map"
+                    ? "bg-emerald-700 text-white"
+                    : "bg-white/90 text-emerald-900 hover:bg-white"
                 }`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className={`h-4 w-4 mr-2 ${activeDropdown === "map" ? "animate-[pulse_1s_infinite]" : ""}`}
+                  className={`h-4 w-4 mr-2 ${
+                    activeDropdown === "map"
+                      ? "animate-[pulse_1s_infinite]"
+                      : ""
+                  }`}
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -302,7 +373,7 @@ export default function Carousel() {
                 View Map
               </button>
               <button
-                onClick={() => toggleDropdown("tour")}
+                onClick={() => toggleModal("tour")}
                 className={`rounded-full px-5 py-2.5 text-sm font-medium transition-all duration-300 flex items-center shadow-md hover:shadow-lg hover:-translate-y-0.5 ${
                   activeDropdown === "tour"
                     ? "bg-emerald-700 text-white"
@@ -311,7 +382,11 @@ export default function Carousel() {
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className={`h-4 w-4 mr-2 ${activeDropdown === "tour" ? "animate-[spin_4s_linear_infinite]" : ""}`}
+                  className={`h-4 w-4 mr-2 ${
+                    activeDropdown === "tour"
+                      ? "animate-[spin_4s_linear_infinite]"
+                      : ""
+                  }`}
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -325,7 +400,7 @@ export default function Carousel() {
                 Virtual Tour
               </button>
               <button
-                onClick={() => toggleDropdown("details")}
+                onClick={() => toggleModal("details")}
                 className={`rounded-full px-5 py-2.5 text-sm font-medium transition-all duration-300 flex items-center shadow-md hover:shadow-lg hover:-translate-y-0.5 ${
                   activeDropdown === "details"
                     ? "bg-emerald-700 text-white"
@@ -334,7 +409,11 @@ export default function Carousel() {
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className={`h-4 w-4 mr-2 ${activeDropdown === "details" ? "animate-[pulse_1s_infinite]" : ""}`}
+                  className={`h-4 w-4 mr-2 ${
+                    activeDropdown === "details"
+                      ? "animate-[pulse_1s_infinite]"
+                      : ""
+                  }`}
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -351,7 +430,7 @@ export default function Carousel() {
             </div>
 
             {/* Dropdown content with animation */}
-            {activeDropdown && (
+            {/* {activeDropdown && (
               <div className="mt-6 p-5 bg-white rounded-lg shadow-lg border border-emerald-100 animate-[fadeInUp_0.4s_ease-out]">
                 {activeDropdown === "contact" && (
                   <div>
@@ -386,8 +465,12 @@ export default function Carousel() {
                           <polyline points="22,6 12,13 2,6"></polyline>
                         </svg>
                         <div>
-                          <p className="text-sm font-medium text-gray-700">Email</p>
-                          <p className="text-emerald-700">{currentImage?.email}</p>
+                          <p className="text-sm font-medium text-gray-700">
+                            Email
+                          </p>
+                          <p className="text-emerald-700">
+                            {currentImage?.email}
+                          </p>
                         </div>
                       </div>
                       <div className="flex items-start">
@@ -404,8 +487,12 @@ export default function Carousel() {
                           <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
                         </svg>
                         <div>
-                          <p className="text-sm font-medium text-gray-700">Phone</p>
-                          <p className="text-emerald-700">{currentImage?.contact}</p>
+                          <p className="text-sm font-medium text-gray-700">
+                            Phone
+                          </p>
+                          <p className="text-emerald-700">
+                            {currentImage?.contact}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -477,32 +564,47 @@ export default function Carousel() {
 
                 {activeDropdown === "details" && (
                   <div>
-                    <h3 className="font-semibold text-emerald-800 mb-3">Details</h3>
+                    <h3 className="font-semibold text-emerald-800 mb-3">
+                      Details
+                    </h3>
                     <div className="bg-emerald-50 p-4 rounded-md animate-[fadeIn_0.6s_ease-out_0.2s]">
                       <p className="mb-2">
-                        <span className="font-medium text-gray-700">Entrance Fee:</span> {currentImage?.entrance || "N/A"}
+                        <span className="font-medium text-gray-700">
+                          Entrance Fee:
+                        </span>{" "}
+                        {currentImage?.entrance || "N/A"}
                       </p>
                       <p className="mb-2">
-                        <span className="font-medium text-gray-700">Pricing:</span> {currentImage?.pricing || "N/A"}
+                        <span className="font-medium text-gray-700">
+                          Pricing:
+                        </span>{" "}
+                        {currentImage?.pricing || "N/A"}
                       </p>
                       <p className="mb-2">
-                        <span className="font-medium text-gray-700">History:</span> {currentImage?.history || "N/A"}
+                        <span className="font-medium text-gray-700">
+                          History:
+                        </span>{" "}
+                        {currentImage?.history || "N/A"}
                       </p>
                       <p className="mb-2">
-                        <span className="font-medium text-gray-700">Activities:</span>
+                        <span className="font-medium text-gray-700">
+                          Activities:
+                        </span>
                       </p>
                       <ul className="list-disc list-inside text-gray-700">
                         {currentImage?.activities
-                          ? currentImage.activities.split(",").map((activity, index) => (
-                              <li key={index}>{activity.trim()}</li>
-                            ))
+                          ? currentImage.activities
+                              .split(",")
+                              .map((activity, index) => (
+                                <li key={index}>{activity.trim()}</li>
+                              ))
                           : "N/A"}
                       </ul>
                     </div>
                   </div>
                 )}
               </div>
-            )}
+            )} */}
           </div>
         </div>
 
@@ -516,7 +618,9 @@ export default function Carousel() {
               {images.map((image, index) => (
                 <div
                   key={image.id}
-                  className={`flex-none w-[192px] h-[128px] rounded-lg overflow-hidden shadow-md transition-all duration-300 cursor-pointer animate-[fadeIn_0.5s_ease-out_${index * 0.1}s] ${
+                  className={`flex-none w-[192px] h-[128px] rounded-lg overflow-hidden shadow-md transition-all duration-300 cursor-pointer animate-[fadeIn_0.5s_ease-out_${
+                    index * 0.1
+                  }s] ${
                     image.id === currentImageId
                       ? "ring-4 ring-amber-500 scale-105 z-10"
                       : "ring-2 ring-white/30 hover:ring-white/70 hover:scale-102"
@@ -524,23 +628,28 @@ export default function Carousel() {
                   onClick={() => {
                     if (image.id !== currentImageId) {
                       setAnimationDirection(
-                        images.findIndex((img) => img.id === currentImageId) < index ? "right" : "left",
-                      )
-                      setIsImageChanging(true)
+                        images.findIndex((img) => img.id === currentImageId) <
+                          index
+                          ? "right"
+                          : "left"
+                      );
+                      setIsImageChanging(true);
                       setTimeout(() => {
-                        setCurrentImageId(image.id)
+                        setCurrentImageId(image.id);
                         setTimeout(() => {
-                          setIsImageChanging(false)
-                        }, 50)
-                      }, 300)
+                          setIsImageChanging(false);
+                        }, 50);
+                      }, 300);
                     }
                   }}
                 >
                   <img
-                    src={`http://tourism.test/storage/${image.src}`}
+                    src={`http://CTSIMP_Backend.test/storage/${image.src}`}
                     alt={image.alt}
                     className={`object-cover w-full h-full transition-transform duration-700 ${
-                      image.id === currentImageId ? "scale-110" : "scale-100 hover:scale-110"
+                      image.id === currentImageId
+                        ? "scale-110"
+                        : "scale-100 hover:scale-110"
                     }`}
                   />
                 </div>
@@ -589,7 +698,8 @@ export default function Carousel() {
 
           {/* Destination counter with animation */}
           <div className="absolute bottom-6 right-1/2 transform translate-x-1/2 bg-emerald-800/90 text-white text-xs font-medium px-3 py-1 rounded-full animate-[pulse_3s_infinite]">
-            {images.findIndex((img) => img.id === currentImageId) + 1} / {images.length}
+            {images.findIndex((img) => img.id === currentImageId) + 1} /{" "}
+            {images.length}
           </div>
         </div>
 
@@ -605,68 +715,250 @@ export default function Carousel() {
       {/* Add CSS animations */}
       <style jsx>{`
         @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
         }
-        
+
         @keyframes fadeOut {
-          from { opacity: 1; }
-          to { opacity: 0; }
+          from {
+            opacity: 1;
+          }
+          to {
+            opacity: 0;
+          }
         }
-        
+
         @keyframes slideInRight {
-          from { transform: translateX(30px); opacity: 0; }
-          to { transform: translateX(0); opacity: 1; }
+          from {
+            transform: translateX(30px);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
         }
-        
+
         @keyframes slideInLeft {
-          from { transform: translateX(-30px); opacity: 0; }
-          to { transform: translateX(0); opacity: 1; }
+          from {
+            transform: translateX(-30px);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
         }
-        
+
         @keyframes slideOutRight {
-          from { transform: translateX(0); opacity: 1; }
-          to { transform: translateX(30px); opacity: 0; }
+          from {
+            transform: translateX(0);
+            opacity: 1;
+          }
+          to {
+            transform: translateX(30px);
+            opacity: 0;
+          }
         }
-        
+
         @keyframes slideOutLeft {
-          from { transform: translateX(0); opacity: 1; }
-          to { transform: translateX(-30px); opacity: 0; }
+          from {
+            transform: translateX(0);
+            opacity: 1;
+          }
+          to {
+            transform: translateX(-30px);
+            opacity: 0;
+          }
         }
-        
+
         @keyframes zoomInRight {
-          from { transform: scale(1.1) translateX(30px); opacity: 0; }
-          to { transform: scale(1) translateX(0); opacity: 1; }
+          from {
+            transform: scale(1.1) translateX(30px);
+            opacity: 0;
+          }
+          to {
+            transform: scale(1) translateX(0);
+            opacity: 1;
+          }
         }
-        
+
         @keyframes zoomInLeft {
-          from { transform: scale(1.1) translateX(-30px); opacity: 0; }
-          to { transform: scale(1) translateX(0); opacity: 1; }
+          from {
+            transform: scale(1.1) translateX(-30px);
+            opacity: 0;
+          }
+          to {
+            transform: scale(1) translateX(0);
+            opacity: 1;
+          }
         }
-        
+
         @keyframes float {
-          0% { transform: translateY(0px); }
-          50% { transform: translateY(-10px); }
-          100% { transform: translateY(0px); }
+          0% {
+            transform: translateY(0px);
+          }
+          50% {
+            transform: translateY(-10px);
+          }
+          100% {
+            transform: translateY(0px);
+          }
         }
-        
+
         @keyframes growWidth {
-          from { width: 0; }
-          to { width: 5rem; }
+          from {
+            width: 0;
+          }
+          to {
+            width: 5rem;
+          }
         }
-        
+
         @keyframes fadeInUp {
-          from { transform: translateY(20px); opacity: 0; }
-          to { transform: translateY(0); opacity: 1; }
+          from {
+            transform: translateY(20px);
+            opacity: 0;
+          }
+          to {
+            transform: translateY(0);
+            opacity: 1;
+          }
         }
-        
+
         @keyframes pulseGradient {
-          0% { opacity: 0.7; }
-          50% { opacity: 0.3; }
-          100% { opacity: 0.7; }
+          0% {
+            opacity: 0.7;
+          }
+          50% {
+            opacity: 0.3;
+          }
+          100% {
+            opacity: 0.7;
+          }
         }
       `}</style>
-    </div>
-  )
-}
 
+      {/* Contact Modal */}
+      <Modal
+        isOpen={activeModal === "contact"}
+        onClose={() => setActiveModal(null)}
+        title="Contact Information"
+      >
+        <div className="bg-emerald-50 p-4 rounded-md">
+          <div className="flex items-start mb-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 mr-3 text-emerald-600 mt-0.5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+              <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+            <div>
+              <p className="text-sm font-medium text-gray-700">Email</p>
+              <p className="text-emerald-700">{currentImage?.email}</p>
+            </div>
+          </div>
+          <div className="flex items-start">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 mr-3 text-emerald-600 mt-0.5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+            </svg>
+            <div>
+              <p className="text-sm font-medium text-gray-700">Phone</p>
+              <p className="text-emerald-700">{currentImage?.contact}</p>
+            </div>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Map Modal */}
+      <Modal
+        isOpen={activeModal === "map"}
+        onClose={() => setActiveModal(null)}
+        title="Location Map"
+      >
+        <div className="border border-emerald-200 rounded-lg overflow-hidden shadow-md">
+          <iframe
+            src={currentImage?.map_iframe}
+            title="Location Map"
+            className="w-full h-64 md:h-96"
+            allowFullScreen
+          ></iframe>
+        </div>
+      </Modal>
+
+      {/* Virtual Tour Modal */}
+      <Modal
+        isOpen={activeModal === "tour"}
+        onClose={() => setActiveModal(null)}
+        title="Virtual Tour Experience"
+      >
+        <div className="border border-emerald-200 rounded-lg overflow-hidden shadow-md">
+          <iframe
+            src={currentImage?.virtual_iframe}
+            title="Virtual Tour"
+            className="w-full h-64 md:h-96"
+            allow="xr-spatial-tracking; vr; gyroscope; accelerometer; fullscreen; autoplay; xr"
+            scrolling="no"
+            allowFullScreen={true}
+            frameBorder="0"
+            allowVR="yes"
+          />
+        </div>
+      </Modal>
+
+      {/* Details Modal */}
+      <Modal
+        isOpen={activeModal === "details"}
+        onClose={() => setActiveModal(null)}
+        title="Details"
+      >
+        <div className="bg-emerald-50 p-4 rounded-md">
+          <p className="mb-2">
+            <span className="font-medium text-gray-700">Entrance Fee:</span>{" "}
+            {currentImage?.entrance || "N/A"}
+          </p>
+          <p className="mb-2">
+            <span className="font-medium text-gray-700">Pricing:</span>{" "}
+            {currentImage?.pricing || "N/A"}
+          </p>
+          <p className="mb-2">
+            <span className="font-medium text-gray-700">History:</span>{" "}
+            {currentImage?.history || "N/A"}
+          </p>
+          <p className="mb-2">
+            <span className="font-medium text-gray-700">Activities:</span>
+          </p>
+          <ul className="list-disc list-inside text-gray-700">
+            {currentImage?.activities
+              ? currentImage.activities
+                  .split(",")
+                  .map((activity, index) => (
+                    <li key={index}>{activity.trim()}</li>
+                  ))
+              : "N/A"}
+          </ul>
+        </div>
+      </Modal>
+    </div>
+  );
+}
